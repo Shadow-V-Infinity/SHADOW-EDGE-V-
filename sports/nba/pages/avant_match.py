@@ -1,68 +1,141 @@
 import streamlit as st
-from sports.nba.services.pre_match_service import NBAPreMatchService
+from sports.nba.services.shotchart_service import ShotChartService
+from sports.nba.services.tracking_service import TrackingService
+from sports.nba.services.pbp_analysis_service import PbpAnalysisService
+from sports.nba.services.injury_service import InjuryService
+from sports.nba.services.matchup_service import MatchupService
+from sports.nba.services.playtype_service import PlayTypeService
+from sports.nba.services.props_service import PropsService
+from sports.nba.services.prediction_service import PredictionService
 
+# -------------------------------------------------------------------
+# INITIALISATION DES SERVICES
+# -------------------------------------------------------------------
 
-def render():
-    st.title("🧬 Avant-match NBA")
+shotchart = ShotChartService()
+tracking = TrackingService()
+pbp = PbpAnalysisService()
+injuries = InjuryService()
+matchups = MatchupService()
+playtypes = PlayTypeService()
+props = PropsService()
+predictions = PredictionService()
 
-    service = NBAPreMatchService()
+# -------------------------------------------------------------------
+# PAGE AVANT-MATCH
+# -------------------------------------------------------------------
 
-    # 🔥 Récupération automatique des matchs du jour
-    today_games = service.get_today_games()
+def render(game_id: str, team_home: str, team_away: str):
 
-    if not today_games:
-        st.info("Aucun match NBA prévu aujourd’hui.")
-        return
+    st.title("🏀 Avant‑Match — Shadow Edge V∞")
 
-    # Format lisible : "Lakers vs Warriors"
-    game_labels = [
-        f"{g['home']} vs {g['away']} ({g['game_id']})"
-        for g in today_games
-    ]
+    st.subheader(f"{team_home} vs {team_away}")
 
-    # Sélecteur
-    selected = st.selectbox("Sélectionne un match :", game_labels)
+    # ---------------------------------------------------------------
+    # 1) INJURIES
+    # ---------------------------------------------------------------
+    st.header("🚑 Injuries & Lineups")
 
-    # Extraction du game_id
-    game_id = selected.split("(")[-1].replace(")", "")
+    home_inj = injuries.get_team_injuries(team_home)
+    away_inj = injuries.get_team_injuries(team_away)
 
-    # Récupération des données
-    data = service.get_match_preview(game_id)
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown(f"### {team_home}")
+        st.dataframe(home_inj)
 
-    if "error" in data:
-        st.error(data["error"])
-        return
+    with col2:
+        st.markdown(f"### {team_away}")
+        st.dataframe(away_inj)
 
-    # --- AFFICHAGE ---
-    st.subheader(f"{data['home_team']} vs {data['away_team']}")
-    st.caption(f"Horaire : {data['game_time']}")
+    # ---------------------------------------------------------------
+    # 2) MATCHUPS
+    # ---------------------------------------------------------------
+    st.header("🛡️ Matchups Individuels")
 
-    st.markdown("---")
-    st.write("### 🔥 Lineups probables")
-    st.write("**Domicile :**", data["probable_lineups"]["home"])
-    st.write("**Extérieur :**", data["probable_lineups"]["away"])
+    matchup_data = matchups.get_matchups(game_id)
+    st.dataframe(matchup_data)
 
-    st.markdown("---")
-    st.write("### 🩹 Blessures")
-    st.json(data["injuries"])
+    mismatch_alerts = matchups.get_mismatch_alerts(game_id)
+    st.markdown("### ⚠️ Mismatchs détectés")
+    st.dataframe(mismatch_alerts)
 
-    st.markdown("---")
-    st.write("### 📊 Stats avancées")
-    st.write("**Domicile :**", data["team_stats"]["home"])
-    st.write("**Extérieur :**", data["team_stats"]["away"])
+    # ---------------------------------------------------------------
+    # 3) PLAY TYPES
+    # ---------------------------------------------------------------
+    st.header("🎯 Play Types (Synergy‑like)")
 
-    st.markdown("---")
-    st.write("### 📈 5 derniers matchs")
-    st.write("**Domicile :**")
-    st.json(data["last_games"]["home"])
-    st.write("**Extérieur :**")
-    st.json(data["last_games"]["away"])
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown(f"### {team_home}")
+        st.json(playtypes.get_team_playtypes(team_home))
 
-    st.markdown("---")
-    st.write("### 🔥 Tendances")
-    st.write("**Domicile :**", data["trends"]["home"])
-    st.write("**Extérieur :**", data["trends"]["away"])
+    with col2:
+        st.markdown(f"### {team_away}")
+        st.json(playtypes.get_team_playtypes(team_away))
 
-    st.markdown("---")
-    st.write("### 🔮 Mini‑prédiction")
-    st.success(data["prediction"])
+    # ---------------------------------------------------------------
+    # 4) TRACKING DATA
+    # ---------------------------------------------------------------
+    st.header("📡 Tracking Data (Second Spectrum‑like)")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown(f"### {team_home}")
+        st.json(tracking.get_team_tracking(team_home, "2024-25"))
+
+    with col2:
+        st.markdown(f"### {team_away}")
+        st.json(tracking.get_team_tracking(team_away, "2024-25"))
+
+    # ---------------------------------------------------------------
+    # 5) MOMENTUM / RUNS (PBP)
+    # ---------------------------------------------------------------
+    st.header("📈 Momentum & Runs")
+
+    runs = pbp.get_runs(game_id)
+    st.markdown("### 🔥 Runs détectés")
+    st.dataframe(runs)
+
+    momentum = pbp.get_momentum_curve(game_id)
+    st.line_chart(momentum)
+
+    # ---------------------------------------------------------------
+    # 6) PLAYER PROPS
+    # ---------------------------------------------------------------
+    st.header("💸 Player Props")
+
+    props_data = props.get_player_props(game_id)
+    st.dataframe(props_data)
+
+    # ---------------------------------------------------------------
+    # 7) PRÉDICTIONS
+    # ---------------------------------------------------------------
+    st.header("🔮 Prédictions du match")
+
+    pred = predictions.get_game_prediction(game_id)
+
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric("Win Probability (Home)", f"{pred['home_win_prob']}%")
+
+    with col2:
+        st.metric("Win Probability (Away)", f"{pred['away_win_prob']}%")
+
+    with col3:
+        st.metric("Marge Projetée", pred["expected_margin"])
+
+    st.markdown("### 📊 Score Projeté")
+    st.write(pred["expected_score"])
+
+    # ---------------------------------------------------------------
+    # 8) SYNTHÈSE AUTOMATIQUE
+    # ---------------------------------------------------------------
+    st.header("🧠 Synthèse Shadow Edge V∞")
+
+    st.success(f"""
+    - **Matchup clé** : {mismatch_alerts[0]['matchup']}  
+    - **Play Type dominant** : {team_home if pred['home_win_prob'] > pred['away_win_prob'] else team_away}  
+    - **Prop value détectée** : {props_data[0]['player']} — {props_data[0]['market']}  
+    - **Run critique** : {runs[0]['description']}  
+    """)
