@@ -1,10 +1,26 @@
 from nba_api.live.nba.endpoints import scoreboard, boxscore
 from nba_api.stats.endpoints import teamgamelog, leaguedashteamstats
-
+from market.market_service import MarketService
 
 class NBAPreMatchService:
     def __init__(self):
-        pass
+        self.market_service = MarketService()
+
+    def get_match_preview(self, game_id: str):
+        # ... ton code actuel ...
+
+        # Probabilité modèle simple (basée sur W_PCT)
+        home_wp = home_stats.get("W_PCT", 0)
+        away_wp = away_stats.get("W_PCT", 0)
+        model_home_prob = home_wp / (home_wp + away_wp) if (home_wp + away_wp) > 0 else None
+
+        preview["market_analysis"] = self.market_service.analyze_match(
+            home.get("teamName"),
+            away.get("teamName"),
+            model_home_prob=model_home_prob,
+        )
+
+        return preview
 
     def get_today_games(self):
         """Retourne la liste des matchs du jour (game_id + noms des équipes)."""
