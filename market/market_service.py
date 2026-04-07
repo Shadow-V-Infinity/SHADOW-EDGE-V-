@@ -7,7 +7,7 @@ class MarketService:
 
     def init(self, api_key=None):
         # TEST UNIQUEMENT
-        self.apikey =afbb1446decb5ea817f310fea663e143
+        self.api_key ="afbb1446decb5ea817f310fea663e143"
         
 
     # ---------------------------
