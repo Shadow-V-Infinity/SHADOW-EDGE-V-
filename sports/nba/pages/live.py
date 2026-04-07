@@ -21,7 +21,8 @@ def render():
             st.write(f"**Horloge :** {game['clock']}")
             st.caption(f"Statut : {game['status']}")
 
-            st.markdown("---.write("### 🔥 Leaders")
+            st.markdown("---")
+            st.write("### 🔥 Leaders")
 
             home_leaders = game["leaders"]["home"]
             away_leaders = game["leaders"]["away"]
