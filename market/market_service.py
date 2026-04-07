@@ -5,10 +5,12 @@ from math import isfinite
 class MarketService:
     BASE_URL = "https://api.the-odds-api.com/v4/sports/basketball_nba/odds"
 
-    def init(self, api_key=None):
-        # TEST UNIQUEMENT
-        self.api_key ="secret"
-        
+    def __init__(self, api_key=None):
+        # Charge la clé depuis l'environnement si non fournie
+        self.api_key = api_key or os.getenv("ODDS_API_KEY")
+
+        if not self.api_key:
+            raise ValueError("ODDS_API_KEY is missing in environment variables")
 
     # ---------------------------
     # 1) Fetch odds (The Odds API)
@@ -24,29 +26,20 @@ class MarketService:
         r.raise_for_status()
         return r.json()
 
-    # ---------------------------
-    # 2) Implied probability
-    # ---------------------------
     @staticmethod
     def implied_prob(odds):
         if not odds or odds <= 1:
             return None
         return 1 / odds
 
-    # ---------------------------
-    # 3) Value bet (model vs market)
-    # ---------------------------
     def value_bet(self, model_prob, market_odds):
         if model_prob is None or market_odds is None:
             return None
         ip = self.implied_prob(market_odds)
         if ip is None:
             return None
-        return model_prob - ip  # > 0 = value
+        return model_prob - ip
 
-    # ---------------------------
-    # 4) Kelly Criterion
-    # ---------------------------
     @staticmethod
     def kelly_fraction(p, odds):
         if p is None or odds is None:
@@ -56,18 +49,12 @@ class MarketService:
         f = (b * p - q) / b if b != 0 else None
         return f if f and isfinite(f) and f > 0 else None
 
-    # ---------------------------
-    # 5) Arbitrage (surebet simple)
-    # ---------------------------
     def arbitrage(self, home_odds, away_odds):
         if not home_odds or not away_odds:
             return None
         inv = (1 / home_odds) + (1 / away_odds)
-        return inv < 1  # True = arbitrage possible
+        return inv < 1
 
-    # ---------------------------
-    # 6) Match odds for a specific game
-    # ---------------------------
     def get_game_market(self, home_team, away_team):
         data = self.fetch_odds()
 
@@ -76,7 +63,7 @@ class MarketService:
             if not bookmakers:
                 continue
 
-            bm = bookmakers[0]  # premier bookmaker
+            bm = bookmakers[0]
             markets = bm.get("markets", [])
             if not markets:
                 continue
@@ -96,9 +83,6 @@ class MarketService:
 
         return None
 
-    # ---------------------------
-    # 7) Full market analysis
-    # ---------------------------
     def analyze_match(self, home_team, away_team, model_home_prob):
         market = self.get_game_market(home_team, away_team)
         if not market:
