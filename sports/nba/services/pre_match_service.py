@@ -7,6 +7,25 @@ class NBAPreMatchService:
     def __init__(self):
         pass
 
+    def get_today_games(self):
+        """Retourne la liste des matchs du jour (game_id + noms des équipes)."""
+        try:
+            board = scoreboard.ScoreBoard().get_dict()
+            games = board.get("scoreboard", {}).get("games", [])
+
+            match_list = []
+            for g in games:
+                match_list.append({
+                    "game_id": g.get("gameId"),
+                    "home": g.get("homeTeam", {}).get("teamName"),
+                    "away": g.get("awayTeam", {}).get("teamName"),
+                })
+            return match_list
+
+        except Exception as e:
+            print(f"[NBAPreMatchService] Erreur get_today_games: {e}")
+            return []
+
     def get_last_games(self, team_id, n=5):
         """Retourne les N derniers matchs d’une équipe."""
         try:
@@ -43,7 +62,6 @@ class NBAPreMatchService:
 
     def get_match_preview(self, game_id: str):
         try:
-            # Scoreboard du jour
             board = scoreboard.ScoreBoard().get_dict()
             games = board.get("scoreboard", {}).get("games", [])
 
@@ -70,7 +88,7 @@ class NBAPreMatchService:
                 "away": away.get("probableStarters", []),
             }
 
-            # Stats avancées (ORTG / DRTG / Pace)
+            # Stats avancées
             stats = leaguedashteamstats.LeagueDashTeamStats().get_dict()
             rows = stats["resultSets"][0]["rowSet"]
             headers = stats["resultSets"][0]["headers"]
@@ -88,15 +106,13 @@ class NBAPreMatchService:
             home_stats = extract_team_stats(home_id)
             away_stats = extract_team_stats(away_id)
 
-            # 5 derniers matchs
+            # 5 derniers matchs + tendances
             home_last = self.get_last_games(home_id)
             away_last = self.get_last_games(away_id)
-
-            # Tendances
             home_trends = self.compute_trends(home_last)
             away_trends = self.compute_trends(away_last)
 
-            # Mini prédiction (simple logique)
+            # Mini prédiction
             prediction = "Équilibré"
             if home_stats.get("ORTG", 0) > away_stats.get("ORTG", 0) + 3:
                 prediction = f"{home.get('teamName')} léger avantage"
