@@ -96,10 +96,12 @@ class NBAPreMatchService:
             def extract_team_stats(team_id):
                 for r in rows:
                     if r[headers.index("TEAM_ID")] == team_id:
+                        def safe(col):
+                            return r[headers.index(col)] if col in headers else None
                         return {
-                            "ORTG": r[headers.index("E_OFF_RATING")] or safe("OFF_RATING"),
-                            "DRTG": r[headers.index("E_DEF_RATING")] or safe("DEF_RATING"),
-                            "PACE": r[headers.index("E_PACE")] or safe("PACE"),
+                            "ORTG": safe("OFF_RATING")] or safe("E_OFF_RATING"),
+                            "DRTG": safe("DEF_RATING")] or safe("E_DEF_RATING"),
+                            "PACE": safe("PACE")] or safe("E_PACE"),
                         }
                 return {}
 
