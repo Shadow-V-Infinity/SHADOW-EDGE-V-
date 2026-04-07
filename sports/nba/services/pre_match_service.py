@@ -129,6 +129,7 @@ class NBAPreMatchService:
             if (home_wp + away_wp) > 0:
                 model_home_prob = home_wp / (home_wp + away_wp)
 
+            # Analyse marché (value, kelly, arbitrage, implied prob)
             market_analysis = self.market_service.analyze_match(
                 home.get("teamName"),
                 away.get("teamName"),
