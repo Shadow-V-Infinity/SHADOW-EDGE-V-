@@ -1,5 +1,8 @@
 # sports/nba/services/player_profile_utils.py
 
+# ---------------------------------------------------------------
+# 1) HEATMAP SHOTCHART (ECharts)
+# ---------------------------------------------------------------
 def build_shotchart_heatmap(shots):
     """
     Génère une heatmap ECharts à partir d'une liste de tirs :
@@ -35,6 +38,46 @@ def build_shotchart_heatmap(shots):
     }
 
 
+# ---------------------------------------------------------------
+# 2) RADAR PLAY TYPES (ECharts)
+# ---------------------------------------------------------------
+def build_playtype_radar(playtypes):
+    """
+    playtypes = dict :
+    {
+        "PnR Ball Handler": 0.23,
+        "Spot Up": 0.18,
+        ...
+    }
+    """
+
+    labels = list(playtypes.keys())
+    values = list(playtypes.values())
+
+    return {
+        "tooltip": {},
+        "radar": {
+            "indicator": [{"name": l, "max": 1} for l in labels],
+            "radius": "70%",
+        },
+        "series": [
+            {
+                "type": "radar",
+                "data": [
+                    {
+                        "value": values,
+                        "name": "Profil Offensif",
+                        "areaStyle": {"opacity": 0.4},
+                    }
+                ],
+            }
+        ],
+    }
+
+
+# ---------------------------------------------------------------
+# 3) FILM ROOM — CLIPS VIDÉO
+# ---------------------------------------------------------------
 def get_player_clips(pbp_service, player_id, limit=10):
     """
     Retourne les clips vidéo du joueur (via PBP + video scraper)
