@@ -1,6 +1,6 @@
 from nba_api.live.nba.endpoints import scoreboard, boxscore
 from nba_api.stats.endpoints import teamgamelog, leaguedashteamstats
-from market.market_service import MarketService
+from sport.market_service import MarketService
 
 
 class NBAPreMatchService:
