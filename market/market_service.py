@@ -5,8 +5,10 @@ from math import isfinite
 class MarketService:
     BASE_URL = "https://api.the-odds-api.com/v4/sports/basketball_nba/odds"
 
-    def __init__(self, api_key=None):
-        self.api_key = api_key or os.getenv("ODDS_API_KEY")
+    def init(self, api_key=None):
+        # TEST UNIQUEMENT
+        self.apikey =afbb1446decb5ea817f310fea663e143
+        
 
     # ---------------------------
     # 1) Fetch odds (The Odds API)
