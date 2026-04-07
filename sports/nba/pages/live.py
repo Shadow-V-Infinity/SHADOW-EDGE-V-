@@ -1,6 +1,7 @@
 import streamlit as st
 from sports.nba.services.live_service import NBALiveService
 
+
 def render():
     st.title("🏀 NBA Live")
     service = NBALiveService()
@@ -12,5 +13,7 @@ def render():
         return
 
     for game in games:
-        st.subheader(f"{game['home_team']} vs {game['away_team']}")
-        st.write(f"Score : {game['home_score']} - {game['away_score']}")
+        with st.container(border=True):
+            st.subheader(f"{game['home_team']} vs {game['away_team']}")
+            st.write(f"Score : {game['home_score']} - {game['away_score']}")
+            st.caption(f"Statut : {game['status']}")
