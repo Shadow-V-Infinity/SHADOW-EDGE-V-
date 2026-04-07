@@ -1,4 +1,8 @@
-flask
-nba_api
+streamlit
+pandas
+numpy
 requests
-gunicorn
+nba_api
+python-dotenv
+beautifulsoup4
+lxml
