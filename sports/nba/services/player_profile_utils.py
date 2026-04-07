@@ -11,7 +11,6 @@ def build_shotchart_heatmap(shots):
         ...
     ]
     """
-
     return {
         "tooltip": {"show": True},
         "xAxis": {"min": -25, "max": 25, "show": False},
@@ -50,7 +49,6 @@ def build_playtype_radar(playtypes):
         ...
     }
     """
-
     labels = list(playtypes.keys())
     values = list(playtypes.values())
 
@@ -83,7 +81,6 @@ def get_player_clips(pbp_service, player_id, limit=10):
     Retourne les clips vidéo du joueur (via PBP + video scraper)
     pbp_service = instance de PbpAnalysisService
     """
-
     try:
         clips = pbp_service.get_player_clips(player_id)
         return clips[:limit]
