@@ -97,9 +97,9 @@ class NBAPreMatchService:
                 for r in rows:
                     if r[headers.index("TEAM_ID")] == team_id:
                         return {
-                            "ORTG": r[headers.index("OFF_RATING")],
-                            "DRTG": r[headers.index("DEF_RATING")],
-                            "PACE": r[headers.index("PACE")],
+                            "ORTG": r[headers.index("E_OFF_RATING")],
+                            "DRTG": r[headers.index("E_DEF_RATING")],
+                            "PACE": r[headers.index("E_PACE")],
                         }
                 return {}
 
