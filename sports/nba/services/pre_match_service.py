@@ -1,6 +1,5 @@
 from nba_api.live.nba.endpoints import scoreboard, boxscore
 from nba_api.stats.endpoints import teamgamelog, leaguedashteamstats
-from nba_api.stats.static import teams
 
 
 class NBAPreMatchService:
@@ -88,20 +87,24 @@ class NBAPreMatchService:
                 "away": away.get("probableStarters", []),
             }
 
-            # Stats avancées
-            stats = leaguedashteamstats.LeagueDashTeamStats(measure_type="Advanced").get_dict()
+            # Stats (version basique compatible Termux)
+            stats = leaguedashteamstats.LeagueDashTeamStats().get_dict()
             rows = stats["resultSets"][0]["rowSet"]
             headers = stats["resultSets"][0]["headers"]
 
             def extract_team_stats(team_id):
                 for r in rows:
                     if r[headers.index("TEAM_ID")] == team_id:
+
                         def safe(col):
                             return r[headers.index(col)] if col in headers else None
+
+                        # Fallback universel : stats toujours présentes
                         return {
-                            "ORTG": safe("OFF_RATING")] or safe("E_OFF_RATING"),
-                            "DRTG": safe("DEF_RATING")] or safe("E_DEF_RATING"),
-                            "PACE": safe("PACE")] or safe("E_PACE"),
+                            "PTS": safe("PTS"),
+                            "REB": safe("REB"),
+                            "AST": safe("AST"),
+                            "W_PCT": safe("W_PCT"),
                         }
                 return {}
 
@@ -114,11 +117,11 @@ class NBAPreMatchService:
             home_trends = self.compute_trends(home_last)
             away_trends = self.compute_trends(away_last)
 
-            # Mini prédiction
+            # Mini prédiction basée sur W_PCT (toujours dispo)
             prediction = "Équilibré"
-            if home_stats.get("ORTG", 0) > away_stats.get("ORTG", 0) + 3:
+            if home_stats.get("W_PCT", 0) > away_stats.get("W_PCT", 0) + 0.05:
                 prediction = f"{home.get('teamName')} léger avantage"
-            if away_stats.get("ORTG", 0) > home_stats.get("ORTG", 0) + 3:
+            elif away_stats.get("W_PCT", 0) > home_stats.get("W_PCT", 0) + 0.05:
                 prediction = f"{away.get('teamName')} léger avantage"
 
             return {
