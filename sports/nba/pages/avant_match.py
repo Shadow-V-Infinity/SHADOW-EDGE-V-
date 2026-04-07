@@ -5,19 +5,35 @@ from sports.nba.services.pre_match_service import NBAPreMatchService
 def render():
     st.title("🧬 Avant-match NBA")
 
-    game_id = st.text_input("ID du match (ou sélection à venir)")
+    service = NBAPreMatchService()
 
-    if not game_id:
-        st.info("Entre un game_id pour voir l’avant-match.")
+    # 🔥 Récupération automatique des matchs du jour
+    today_games = service.get_today_games()
+
+    if not today_games:
+        st.info("Aucun match NBA prévu aujourd’hui.")
         return
 
-    service = NBAPreMatchService()
+    # Format lisible : "Lakers vs Warriors"
+    game_labels = [
+        f"{g['home']} vs {g['away']} ({g['game_id']})"
+        for g in today_games
+    ]
+
+    # Sélecteur
+    selected = st.selectbox("Sélectionne un match :", game_labels)
+
+    # Extraction du game_id
+    game_id = selected.split("(")[-1].replace(")", "")
+
+    # Récupération des données
     data = service.get_match_preview(game_id)
 
     if "error" in data:
         st.error(data["error"])
         return
 
+    # --- AFFICHAGE ---
     st.subheader(f"{data['home_team']} vs {data['away_team']}")
     st.caption(f"Horaire : {data['game_time']}")
 
