@@ -16,7 +16,10 @@ def build_shotchart_heatmap(shots):
         "series": [
             {
                 "type": "heatmap",
-                "data": [[s["x"], s["y"], 1 if s["made"] else 0] for s in shots],
+                "data": [
+                    [s["x"], s["y"], 1 if s.get("made") else 0]
+                    for s in shots
+                ],
                 "pointSize": 12,
                 "blurSize": 20,
             }
@@ -41,5 +44,5 @@ def get_player_clips(pbp_service, player_id, limit=10):
     try:
         clips = pbp_service.get_player_clips(player_id)
         return clips[:limit]
-    except:
+    except Exception:
         return []
