@@ -89,7 +89,7 @@ class NBAPreMatchService:
             }
 
             # Stats avancées
-            stats = leaguedashteamstats.LeagueDashTeamStats().get_dict()
+            stats = leaguedashteamstats.LeagueDashTeamStats(measure_type="Advanced").get_dict()
             rows = stats["resultSets"][0]["rowSet"]
             headers = stats["resultSets"][0]["headers"]
 
@@ -97,9 +97,9 @@ class NBAPreMatchService:
                 for r in rows:
                     if r[headers.index("TEAM_ID")] == team_id:
                         return {
-                            "ORTG": r[headers.index("E_OFF_RATING")],
-                            "DRTG": r[headers.index("E_DEF_RATING")],
-                            "PACE": r[headers.index("E_PACE")],
+                            "ORTG": r[headers.index("E_OFF_RATING")] or safe("OFF_RATING"),
+                            "DRTG": r[headers.index("E_DEF_RATING")] or safe("DEF_RATING"),
+                            "PACE": r[headers.index("E_PACE")] or safe("PACE"),
                         }
                 return {}
 
