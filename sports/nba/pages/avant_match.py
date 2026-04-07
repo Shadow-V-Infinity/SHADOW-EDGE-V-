@@ -27,10 +27,26 @@ def render():
     st.write("**Extérieur :**", data["probable_lineups"]["away"])
 
     st.markdown("---")
-    st.write("### 🏥 Blessures")
+    st.write("### 🩹 Blessures")
     st.json(data["injuries"])
 
     st.markdown("---")
     st.write("### 📊 Stats avancées")
-    st.write("**Équipe domicile :**", data["team_stats"]["home"])
-    st.write("**Équipe extérieure :**", data["team_stats"]["away"])
+    st.write("**Domicile :**", data["team_stats"]["home"])
+    st.write("**Extérieur :**", data["team_stats"]["away"])
+
+    st.markdown("---")
+    st.write("### 📈 5 derniers matchs")
+    st.write("**Domicile :**")
+    st.json(data["last_games"]["home"])
+    st.write("**Extérieur :**")
+    st.json(data["last_games"]["away"])
+
+    st.markdown("---")
+    st.write("### 🔥 Tendances")
+    st.write("**Domicile :**", data["trends"]["home"])
+    st.write("**Extérieur :**", data["trends"]["away"])
+
+    st.markdown("---")
+    st.write("### 🔮 Mini‑prédiction")
+    st.success(data["prediction"])
