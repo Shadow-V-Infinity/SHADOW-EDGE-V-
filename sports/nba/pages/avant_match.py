@@ -1,141 +1,129 @@
 import streamlit as st
-from sports.nba.services.shotchart_service import ShotChartService
-from sports.nba.services.tracking_service import TrackingService
-from sports.nba.services.pbp_analysis_service import PbpAnalysisService
-from sports.nba.services.injury_service import InjuryService
-from sports.nba.services.matchup_service import MatchupService
-from sports.nba.services.playtype_service import PlayTypeService
-from sports.nba.services.props_service import PropsService
-from sports.nba.services.prediction_service import PredictionService
+from sports.nba.services.pre_match_service import ShadowEdgePreMatchService
 
-# -------------------------------------------------------------------
-# INITIALISATION DES SERVICES
-# -------------------------------------------------------------------
+pre = ShadowEdgePreMatchService()
 
-shotchart = ShotChartService()
-tracking = TrackingService()
-pbp = PbpAnalysisService()
-injuries = InjuryService()
-matchups = MatchupService()
-playtypes = PlayTypeService()
-props = PropsService()
-predictions = PredictionService()
-
-# -------------------------------------------------------------------
-# PAGE AVANT-MATCH
-# -------------------------------------------------------------------
-
-def render(game_id: str, team_home: str, team_away: str):
-
+def render():
     st.title("🏀 Avant‑Match — Shadow Edge V∞")
 
-    st.subheader(f"{team_home} vs {team_away}")
+    # ---------------------------------------------------------------
+    # 1) Sélection du match
+    # ---------------------------------------------------------------
+    games = pre.get_today_games()
+
+    if not games:
+        st.info("Aucun match aujourd’hui.")
+        return
+
+    game_names = [f"{g['away']} @ {g['home']}" for g in games]
+    selected = st.selectbox("Sélectionne un match", game_names)
+
+    if not selected:
+        return
+
+    idx = game_names.index(selected)
+    game = games[idx]
+
+    game_id = game["game_id"]
+    home = game["home"]
+    away = game["away"]
 
     # ---------------------------------------------------------------
-    # 1) INJURIES
+    # 2) Chargement du pack complet
     # ---------------------------------------------------------------
-    st.header("🚑 Injuries & Lineups")
+    data = pre.get_pre_match_package(game_id, home, away)
 
-    home_inj = injuries.get_team_injuries(team_home)
-    away_inj = injuries.get_team_injuries(team_away)
+    # ---------------------------------------------------------------
+    # 3) Injuries
+    # ---------------------------------------------------------------
+    st.header("🚑 Injuries")
 
     col1, col2 = st.columns(2)
-    with col1:
-        st.markdown(f"### {team_home}")
-        st.dataframe(home_inj)
+    col1.subheader(home)
+    col1.dataframe(data["injuries"]["shadow_edge"]["home"])
 
-    with col2:
-        st.markdown(f"### {team_away}")
-        st.dataframe(away_inj)
+    col2.subheader(away)
+    col2.dataframe(data["injuries"]["shadow_edge"]["away"])
 
     # ---------------------------------------------------------------
-    # 2) MATCHUPS
+    # 4) Matchups
     # ---------------------------------------------------------------
     st.header("🛡️ Matchups Individuels")
+    st.dataframe(data["matchups"]["full"])
 
-    matchup_data = matchups.get_matchups(game_id)
-    st.dataframe(matchup_data)
-
-    mismatch_alerts = matchups.get_mismatch_alerts(game_id)
-    st.markdown("### ⚠️ Mismatchs détectés")
-    st.dataframe(mismatch_alerts)
+    st.subheader("⚠️ Mismatchs détectés")
+    st.dataframe(data["matchups"]["alerts"])
 
     # ---------------------------------------------------------------
-    # 3) PLAY TYPES
+    # 5) Play Types
     # ---------------------------------------------------------------
     st.header("🎯 Play Types (Synergy‑like)")
 
     col1, col2 = st.columns(2)
-    with col1:
-        st.markdown(f"### {team_home}")
-        st.json(playtypes.get_team_playtypes(team_home))
+    col1.subheader(home)
+    col1.json(data["playtypes"]["home"])
 
-    with col2:
-        st.markdown(f"### {team_away}")
-        st.json(playtypes.get_team_playtypes(team_away))
+    col2.subheader(away)
+    col2.json(data["playtypes"]["away"])
 
     # ---------------------------------------------------------------
-    # 4) TRACKING DATA
+    # 6) Tracking Data
     # ---------------------------------------------------------------
     st.header("📡 Tracking Data (Second Spectrum‑like)")
 
     col1, col2 = st.columns(2)
-    with col1:
-        st.markdown(f"### {team_home}")
-        st.json(tracking.get_team_tracking(team_home, "2024-25"))
+    col1.subheader(home)
+    col1.json(data["tracking"]["home"])
 
-    with col2:
-        st.markdown(f"### {team_away}")
-        st.json(tracking.get_team_tracking(team_away, "2024-25"))
+    col2.subheader(away)
+    col2.json(data["tracking"]["away"])
 
     # ---------------------------------------------------------------
-    # 5) MOMENTUM / RUNS (PBP)
+    # 7) Momentum & Runs
     # ---------------------------------------------------------------
     st.header("📈 Momentum & Runs")
 
-    runs = pbp.get_runs(game_id)
-    st.markdown("### 🔥 Runs détectés")
-    st.dataframe(runs)
+    st.subheader("🔥 Runs détectés")
+    st.dataframe(data["pbp"]["runs"])
 
-    momentum = pbp.get_momentum_curve(game_id)
-    st.line_chart(momentum)
+    st.subheader("📈 Momentum Curve")
+    st.line_chart(data["pbp"]["momentum"])
 
     # ---------------------------------------------------------------
-    # 6) PLAYER PROPS
+    # 8) Player Props
     # ---------------------------------------------------------------
     st.header("💸 Player Props")
-
-    props_data = props.get_player_props(game_id)
-    st.dataframe(props_data)
+    st.dataframe(data["props"])
 
     # ---------------------------------------------------------------
-    # 7) PRÉDICTIONS
+    # 9) Prédictions
     # ---------------------------------------------------------------
-    st.header("🔮 Prédictions du match")
+    st.header("🔮 Prédictions Shadow Edge V∞")
 
-    pred = predictions.get_game_prediction(game_id)
+    pred = data["predictions"]
 
     col1, col2, col3 = st.columns(3)
-    with col1:
-        st.metric("Win Probability (Home)", f"{pred['home_win_prob']}%")
+    col1.metric("Home Win %", f"{pred['home_win_prob']}%")
+    col2.metric("Away Win %", f"{pred['away_win_prob']}%")
+    col3.metric("Marge Projetée", pred["expected_margin"])
 
-    with col2:
-        st.metric("Win Probability (Away)", f"{pred['away_win_prob']}%")
-
-    with col3:
-        st.metric("Marge Projetée", pred["expected_margin"])
-
-    st.markdown("### 📊 Score Projeté")
+    st.subheader("📊 Score Projeté")
     st.write(pred["expected_score"])
 
     # ---------------------------------------------------------------
-    # 8) SYNTHÈSE AUTOMATIQUE
+    # 10) Analyse Marché
+    # ---------------------------------------------------------------
+    st.header("💹 Analyse Marché")
+    st.json(data["market_analysis"])
+
+    # ---------------------------------------------------------------
+    # 11) Synthèse automatique
     # ---------------------------------------------------------------
     st.header("🧠 Synthèse Shadow Edge V∞")
 
     st.success(f"""
-    - **Matchup clé** : {mismatch_alerts[0]['matchup']}  
-    - **Play Type dominant** : {team_home if pred['home_win_prob'] > pred['away_win_prob'] else team_away}  
-    - **Prop value détectée** : {props_data[0]['player']} — {props_data[0]['market']}  
-    - **Run critique** : {runs[0]['description']}  
+    - **Matchup clé :** {data['matchups']['alerts'][0]['matchup'] if data['matchups']['alerts'] else 'Aucun'}
+    - **Équipe dominante (modèle) :** {home if pred['home_win_prob'] > pred['away_win_prob'] else away}
+    - **Prop value détectée :** {data['props'][0]['player']} — {data['props'][0]['market'] if data['props'] else 'Aucune'}
+    - **Run critique :** {data['pbp']['runs'][0]['description'] if data['pbp']['runs'] else 'Aucun'}
     """)
