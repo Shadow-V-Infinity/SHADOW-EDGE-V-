@@ -1,47 +1,31 @@
 import streamlit as st
-from sports.nba.services.pre_match_service import ShadowEdgePreMatchService
 
-pre = ShadowEdgePreMatchService()
+st.title("🔥 Betting Radar — Shadow Edge V∞")
 
-def render():
-    st.title("💸 Betting Radar — Shadow Edge V∞")
+st.markdown("### 📊 Analyse du Match")
+st.info("Module en cours d'activation. Les analyses seront affichées ici.")
 
-    games = pre.get_today_games()
-    game_names = [f"{g['away']} @ {g['home']}" for g in games]
-    selected = st.selectbox("Sélectionne un match", game_names)
+st.markdown("### 🎯 Value Bets")
+st.warning("Aucune value détectée pour le moment.")
 
-    if not selected:
-        return
+st.markdown("### 🧠 Predictions")
+col1, col2 = st.columns(2)
+with col1:
+    st.metric("Probabilité Victoire Home", "—")
+with col2:
+    st.metric("Probabilité Victoire Away", "—")
 
-    idx = game_names.index(selected)
-    game = games[idx]
+st.markdown("### ⚡ Matchup Alerts")
+st.success("Aucune alerte détectée.")
 
-    game_id = game["game_id"]
-    home = game["home"]
-    away = game["away"]
+st.markdown("### 📈 Tendances")
+col1, col2 = st.columns(2)
+with col1:
+    st.subheader("Home")
+    st.write("—")
+with col2:
+    st.subheader("Away")
+    st.write("—")
 
-    data = pre.get_pre_match_package(game_id, home, away)
-
-    # Marché
-    st.header("💹 Analyse Marché")
-    st.json(data["market_analysis"])
-
-    # Props Value
-    st.header("🎯 Props Value")
-    st.dataframe(data["props"])
-
-    # Predictions
-    st.header("🔮 Modèle Shadow Edge")
-    pred = data["predictions"]
-    st.metric("Home Win %", f"{pred['home_win_prob']}%")
-    st.metric("Away Win %", f"{pred['away_win_prob']}%")
-
-    # Mismatchs
-    st.header("⚠️ Mismatchs")
-    st.dataframe(data["matchups"]["alerts"])
-
-    # Tendances
-    st.header("📊 Tendances")
-    col1, col2 = st.columns(2)
-    col1.json(data["trends"]["home"])
-    col2.json(data["trends"]["away"])
+st.markdown("---")
+st.caption("Shadow Edge V∞ — Betting Radar en construction 🚧")
