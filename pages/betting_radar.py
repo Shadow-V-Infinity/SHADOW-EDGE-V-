@@ -7,9 +7,11 @@ pre = PreMatchService()
 
 st.markdown("### 🏀 Sélection du match")
 game_id = st.text_input("Game ID", "")
+home = st.text_input("Home Team", "")
+away = st.text_input("Away Team", "")
 
-if game_id:
-    data = pre.get_pre_match_package(game_id, None, None)
+if game_id and home and away:
+    data = pre.get_pre_match_package(game_id, home, away)
 
     st.markdown("## 📊 Analyse du Marché")
     st.json(data["market_analysis"])
