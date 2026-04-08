@@ -1,5 +1,7 @@
 # sports/nba/services/pre_match_service.py
 
+import time
+
 from sports.nba.services.shotchart_service import ShotChartService
 from sports.nba.services.tracking_service import TrackingService
 from sports.nba.services.pbp_analysis_service import PbpAnalysisService
@@ -12,8 +14,34 @@ from sports.nba.services.trends_service import TrendsService
 
 from nba_api.live.nba.endpoints import scoreboard, boxscore
 from nba_api.stats.endpoints import teamgamelog, leaguedashteamstats
+from nba_api.stats.library.http import NBAStatsHTTP
 
 from sports.market.services.market_service import MarketService
+
+
+# -------------------------------------------------------------------
+# Patch headers NBA Stats pour éviter les "Connection reset by peer"
+# -------------------------------------------------------------------
+NBAStatsHTTP.headers.update({
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                  "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Referer": "https://www.nba.com/",
+    "Accept-Language": "en-US,en;q=0.9",
+})
+
+
+def _safe_league_dash_team_stats(retries: int = 3, delay: float = 1.0):
+    """
+    Wrapper robuste autour de LeagueDashTeamStats :
+    - retries si la connexion est reset / échoue
+    - retourne None si l'API est down au lieu de faire crasher tout le service
+    """
+    for _ in range(retries):
+        try:
+            return leaguedashteamstats.LeagueDashTeamStats().get_dict()
+        except Exception:
+            time.sleep(delay)
+    return None
 
 
 class ShadowEdgePreMatchService:
@@ -115,16 +143,32 @@ class ShadowEdgePreMatchService:
         except Exception:
             nba_injuries = []
 
-        # Stats officielles NBA
-        stats = leaguedashteamstats.LeagueDashTeamStats().get_dict()
-        rows = stats["resultSets"][0]["rowSet"]
-        headers = stats["resultSets"][0]["headers"]
+        # Stats officielles NBA (robuste)
+        stats = _safe_league_dash_team_stats()
+        if stats is None:
+            rows = []
+            headers = []
+        else:
+            rows = stats["resultSets"][0]["rowSet"]
+            headers = stats["resultSets"][0]["headers"]
 
         def extract_team_stats(team_id):
+            if not rows or not headers:
+                return {}
+            try:
+                team_id_idx = headers.index("TEAM_ID")
+            except ValueError:
+                return {}
+
+            def safe(col):
+                try:
+                    idx = headers.index(col)
+                    return r[idx]
+                except ValueError:
+                    return None
+
             for r in rows:
-                if r[headers.index("TEAM_ID")] == team_id:
-                    def safe(col):
-                        return r[headers.index(col)] if col in headers else None
+                if r[team_id_idx] == team_id:
                     return {
                         "PTS": safe("PTS"),
                         "REB": safe("REB"),
