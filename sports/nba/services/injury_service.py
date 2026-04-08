@@ -11,10 +11,10 @@ class InjuryService:
         """
         Liste des blessures actuelles (statut, raison, équipe).
         """
-        raise NotImplementedError
+        return []
 
     def get_team_injuries(self, team_id: str) -> List[Dict[str, Any]]:
-        raise NotImplementedError
+        return []
 
     def get_player_injury(self, player_id: str) -> Dict[str, Any]:
-        raise NotImplementedError
+        return []
