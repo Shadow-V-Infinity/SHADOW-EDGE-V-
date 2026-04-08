@@ -1,42 +1,68 @@
-import streamlit as st
-from sports.nba.services.pre_match_service import PreMatchService
+def analyze_match(self, home_team, away_team, model_home_prob):
+    market = self.get_game_market(home_team, away_team)
+    if not market:
+        return {"market": None}
 
-st.title("🔥 Betting Radar — Shadow Edge V∞")
+    home_odds = market["home_odds"]
+    away_odds = market["away_odds"]
 
-pre = PreMatchService()
+    # Probabilités implicites
+    home_ip = self.implied_prob(home_odds)
+    away_ip = self.implied_prob(away_odds)
 
-st.markdown("### 🏀 Sélection du match")
-game_id = st.text_input("Game ID", "")
-home = st.text_input("Home Team", "")
-away = st.text_input("Away Team", "")
+    # Value bet
+    value = self.value_bet(model_home_prob, home_odds)
+    kelly = self.kelly_fraction(model_home_prob, home_odds)
+    arb = self.arbitrage(home_odds, away_odds)
 
-if game_id and home and away:
-    data = pre.get_pre_match_package(game_id, home, away)
+    # -----------------------------
+    # SIGNES MARCHÉ (Shadow Edge V∞)
+    # -----------------------------
 
-    st.markdown("## 📊 Analyse du Marché")
-    st.json(data["market_analysis"])
+    # 1) Steam Move (simulation d'une opening line)
+    opening_home_odds = home_odds + (0.10 if home_odds > 1 else 0)
+    steam_move = opening_home_odds - home_odds
 
-    st.markdown("## 🎯 Value Bets")
-    if data["props"]:
-        st.json(data["props"])
+    # 2) Reverse Line Movement (RLM)
+    # Si la probabilité implicite baisse alors que la value augmente → RLM
+    rlm = None
+    if value is not None and home_ip is not None:
+        rlm = value > 0 and home_ip < 0.50
+
+    # 3) Market Pressure Index (MPI)
+    mpi = round(abs(steam_move) * 10, 2)
+
+    # 4) Line Movement Score
+    lm_score = round((steam_move * -1) * 100, 2)
+
+    # 5) Value Radar
+    if value is None:
+        value_radar = "No Data"
+    elif value > 0.10:
+        value_radar = "🔥 Strong Value"
+    elif value > 0.03:
+        value_radar = "🟢 Weak Value"
     else:
-        st.info("Aucune value détectée pour le moment.")
+        value_radar = "⚪ No Value"
 
-    st.markdown("## 🧠 Prédictions")
-    col1, col2 = st.columns(2)
-    col1.metric("Home Win %", data["predictions"]["home_win_prob"])
-    col2.metric("Away Win %", data["predictions"]["away_win_prob"])
-
-    st.markdown("## ⚡ Matchup Alerts")
-    if data["matchups"]["alerts"]:
-        st.json(data["matchups"]["alerts"])
-    else:
-        st.success("Aucune alerte détectée.")
-
-    st.markdown("## 📈 Tendances")
-    col1, col2 = st.columns(2)
-    col1.write(data["trends"]["home"])
-    col2.write(data["trends"]["away"])
-
-st.markdown("---")
-st.caption("Shadow Edge V∞ — Betting Radar en construction 🚧")
+    return {
+        "market": market,
+        "implied_probability": {
+            "home": home_ip,
+            "away": away_ip,
+        },
+        "value": {
+            "home_value": value,
+            "value_radar": value_radar,
+        },
+        "kelly": {
+            "home_fraction": kelly,
+        },
+        "arbitrage": arb,
+        "signals": {
+            "steam_move": steam_move,
+            "reverse_line_movement": rlm,
+            "market_pressure_index": mpi,
+            "line_movement_score": lm_score,
+        }
+    }
