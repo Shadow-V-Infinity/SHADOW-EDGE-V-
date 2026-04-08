@@ -6,15 +6,10 @@ class MarketService:
     BASE_URL = "https://api.the-odds-api.com/v4/sports/basketball_nba/odds"
 
     def __init__(self, api_key=None):
-        # Charge la clé depuis l'environnement si non fournie
         self.api_key = api_key or os.getenv("ODDS_API_KEY")
-
         if not self.api_key:
             raise ValueError("ODDS_API_KEY is missing in environment variables")
 
-    # ---------------------------
-    # 1) Fetch odds (The Odds API)
-    # ---------------------------
     def fetch_odds(self):
         params = {
             "apiKey": self.api_key,
