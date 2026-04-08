@@ -10,13 +10,13 @@ class MatchupService:
         """
         Matchups individuels pour un match.
         """
-        raise NotImplementedError
+        return []
 
     def get_player_matchup(self, player_id: str, opponent_team_id: str) -> Dict[str, Any]:
-        raise NotImplementedError
+        return []
 
     def get_mismatch_alerts(self, game_id: str) -> List[Dict[str, Any]]:
         """
         Détection automatique des mismatchs.
         """
-        raise NotImplementedError
+        return []
