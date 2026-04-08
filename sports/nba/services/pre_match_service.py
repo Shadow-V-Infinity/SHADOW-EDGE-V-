@@ -11,7 +11,7 @@ from sports.nba.services.prediction_service import PredictionService
 
 from nba_api.live.nba.endpoints import scoreboard, boxscore
 from nba_api.stats.endpoints import teamgamelog, leaguedashteamstats
-from sports.market_service import MarketService
+from sports.market.services.market_service import MarketService
 
 
 class ShadowEdgePreMatchService:
