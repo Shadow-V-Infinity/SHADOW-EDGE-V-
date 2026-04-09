@@ -138,3 +138,26 @@
         box-shadow: 0 0 10px rgba(179, 0, 255, 0.2);
     }
 }
+
+.big-score {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 25px;
+}
+
+.score-home,
+.score-away {
+    font-size: 3.2rem;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 0 0 20px #b300ff, 0 0 40px #b300ff;
+    letter-spacing: 2px;
+}
+
+.score-separator {
+    font-size: 2.5rem;
+    color: #b300ff;
+    text-shadow: 0 0 15px #b300ff;
+}
