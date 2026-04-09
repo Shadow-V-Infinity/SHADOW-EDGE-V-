@@ -1,7 +1,7 @@
 # app/services/nba/live_service.py
 
 from nba_api.live.nba.endpoints import scoreboard, boxscore
-from app.services.nba.pre_match_service import PreMatchService
+from app.services.nba.pre_match_service import ShadowEdgePreMatchService
 
 
 class NBALiveService:
