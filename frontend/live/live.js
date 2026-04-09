@@ -77,7 +77,11 @@ async function loadLiveGames() {
                 </div>
 
                 <p>Status : ${game.status}</p>
-                <p>Score : ${game.homeScore} - ${game.awayScore}</p>
+                <div class="big-score">
+    <span class="score-home">${game.homeScore}</span>
+    <span class="score-separator">-</span>
+    <span class="score-away">${game.awayScore}</span>
+</div>
             `;
 
             // Effet pulse si match en cours
