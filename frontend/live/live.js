@@ -49,8 +49,27 @@ async function loadLiveGames() {
         }
 
         games.forEach(game => {
-            const card = document.createElement("div");
-            card.className = "live-card";
+            const homeLogo = TEAM_LOGOS[game.homeTeam];
+const awayLogo = TEAM_LOGOS[game.awayTeam];
+
+card.innerHTML = `
+    <div class="live-card-header">
+        <div class="team-block">
+            <img src="https://cdn.nba.com/logos/nba/${homeLogo}/global/L/logo.svg" class="team-logo">
+            <span>${game.homeTeam}</span>
+        </div>
+
+        <div class="vs">VS</div>
+
+        <div class="team-block">
+            <img src="https://cdn.nba.com/logos/nba/${awayLogo}/global/L/logo.svg" class="team-logo">
+            <span>${game.awayTeam}</span>
+        </div>
+    </div>
+
+    <p>Status : ${game.status}</p>
+    <p>Score : ${game.homeScore} - ${game.awayScore}</p>
+`;
 
             card.innerHTML = `
                 <h2>${game.homeTeam} vs ${game.awayTeam}</h2>
