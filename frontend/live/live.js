@@ -48,7 +48,9 @@ async function loadLiveGames() {
             return;
         }
 
-        games.forEach(game => {
+        games.forEach(game => { 
+            const card = document.createElement("div");
+card.className = "live-card";
             const homeLogo = TEAM_LOGOS[game.homeTeam];
 const awayLogo = TEAM_LOGOS[game.awayTeam];
 
