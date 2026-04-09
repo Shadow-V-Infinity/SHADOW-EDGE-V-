@@ -5,4 +5,4 @@ nixPkgs = ["python311", "python311Packages.pip"]
 cmds = ["pip install --break-system-packages -r requirements.txt"]
 
 [start]
-cmd = "python main.py"
+cmd = "streamlit run streamlit_app.py --server.port=$PORT --server.address=0.0.0.0"
