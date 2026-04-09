@@ -121,3 +121,20 @@
     color: #b300ff;
     text-shadow: 0 0 10px #b300ff;
 }
+
+/* Effet pulse Shadow Edge */
+.live-card.pulse {
+    animation: pulseGlow 2.2s infinite ease-in-out;
+}
+
+@keyframes pulseGlow {
+    0% {
+        box-shadow: 0 0 10px rgba(179, 0, 255, 0.2);
+    }
+    50% {
+        box-shadow: 0 0 25px rgba(179, 0, 255, 0.6);
+    }
+    100% {
+        box-shadow: 0 0 10px rgba(179, 0, 255, 0.2);
+    }
+}
