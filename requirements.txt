@@ -3,3 +3,7 @@ uvicorn[standard]==0.29.0
 nba-api==1.4.1
 requests==2.31.0
 python-multipart==0.0.9
+numpy
+beautifulsoup4
+lxml
+pandas
