@@ -3,7 +3,7 @@ from sports.nba.services.live_service import NBALiveService
 
 service = NBALiveService()
 
-def render():
+def live_page():
     st.title("📡 LIVE — Shadow Edge V∞")
 
     games = service.get_live_games()
