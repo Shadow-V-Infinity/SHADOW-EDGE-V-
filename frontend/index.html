@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shadow Edge V∞</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #0a0014;
+            color: #b300ff;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            letter-spacing: 6px;
+            margin-bottom: 12px;
+            text-shadow: 0 0 20px #b300ff, 0 0 40px #b300ff;
+        }
+
+        .subtitle {
+            color: #555;
+            font-size: 0.9rem;
+            letter-spacing: 3px;
+            margin-bottom: 60px;
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            width: 280px;
+        }
+
+        a {
+            display: block;
+            padding: 16px 24px;
+            border: 1px solid rgba(179, 0, 255, 0.5);
+            border-radius: 6px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            background: rgba(179, 0, 255, 0.08);
+            transition: 0.25s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        a::after {
+            content: "";
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, #b300ff, transparent);
+            animation: hud-line 3s linear infinite;
+        }
+
+        @keyframes hud-line {
+            0%   { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        a:hover {
+            background: rgba(179, 0, 255, 0.25);
+            border-color: #b300ff;
+            box-shadow: 0 0 20px rgba(179, 0, 255, 0.4);
+            transform: scale(1.03);
+        }
+
+        .api-badge {
+            margin-top: 50px;
+            font-size: 0.75rem;
+            color: #333;
+            letter-spacing: 2px;
+        }
+
+        .api-badge a {
+            color: #555;
+            border: none;
+            background: none;
+            padding: 0;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            display: inline;
+        }
+
+        .api-badge a::after { display: none; }
+        .api-badge a:hover { color: #b300ff; transform: none; box-shadow: none; }
+    </style>
+</head>
+<body>
+
+    <h1>Shadow Edge V∞</h1>
+    <p class="subtitle">MOTEUR ANALYTIQUE NBA</p>
+
+    <div class="menu">
+        <a href="/live">⚡ LIVE HUD</a>
+        <a href="/pre_match">📊 AVANT-MATCH</a>
+    </div>
+
+    <p class="api-badge">
+        API → <a href="/docs" target="_blank">/docs</a>
+        &nbsp;|&nbsp;
+        <a href="/api" target="_blank">/api</a>
+    </p>
+
+</body>
+</html>
