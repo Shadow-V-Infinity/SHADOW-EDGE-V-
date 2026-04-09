@@ -35,7 +35,6 @@ const TEAM_LOGOS = {
 // Endpoint LIVE
 const API_URL = "https://shadow-edge-v-production.up.railway.app/nba/live/games";
 
-
 // Chargement des matchs LIVE
 async function loadLiveGames() {
     const container = document.getElementById("live-games");
@@ -60,10 +59,11 @@ async function loadLiveGames() {
             const homeLogo = TEAM_LOGOS[game.homeTeam];
             const awayLogo = TEAM_LOGOS[game.awayTeam];
 
-            // Contenu de la carte
+            // Contenu propre
             card.innerHTML = `
                 <div class="live-card-header">
                     <div class="team-block">
+                        <div class="possession-dot ${game.possession === game.homeTeam ? 'active' : ''}"></div>
                         <img src="https://cdn.nba.com/logos/nba/${homeLogo}/global/L/logo.svg" class="team-logo">
                         <span>${game.homeTeam}</span>
                     </div>
@@ -71,17 +71,19 @@ async function loadLiveGames() {
                     <div class="vs">VS</div>
 
                     <div class="team-block">
+                        <div class="possession-dot ${game.possession === game.awayTeam ? 'active' : ''}"></div>
                         <img src="https://cdn.nba.com/logos/nba/${awayLogo}/global/L/logo.svg" class="team-logo">
                         <span>${game.awayTeam}</span>
                     </div>
                 </div>
 
                 <p>Status : ${game.status}</p>
+
                 <div class="big-score">
-    <span class="score-home">${game.homeScore}</span>
-    <span class="score-separator">-</span>
-    <span class="score-away">${game.awayScore}</span>
-</div>
+                    <span class="score-home">${game.homeScore}</span>
+                    <span class="score-separator">-</span>
+                    <span class="score-away">${game.awayScore}</span>
+                </div>
             `;
 
             // Effet pulse si match en cours
