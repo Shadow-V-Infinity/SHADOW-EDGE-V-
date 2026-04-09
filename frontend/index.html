@@ -2,7 +2,13 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Shadow Edge">
+    <meta name="theme-color" content="#b300ff">
+    <link rel="manifest" href="/manifest.json">
     <title>Shadow Edge V∞</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -112,6 +118,14 @@
         &nbsp;|&nbsp;
         <a href="/api" target="_blank">/api</a>
     </p>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js')
+                .then(() => console.log('[SW] Shadow Edge V∞ actif'))
+                .catch(err => console.error('[SW] Erreur:', err));
+        }
+    </script>
 
 </body>
 </html>
