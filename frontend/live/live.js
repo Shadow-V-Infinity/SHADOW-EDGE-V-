@@ -1,3 +1,4 @@
+// Mapping des logos NBA
 const TEAM_LOGOS = {
     "Atlanta Hawks": 1610612737,
     "Boston Celtics": 1610612738,
@@ -31,8 +32,11 @@ const TEAM_LOGOS = {
     "Washington Wizards": 1610612764
 };
 
+// Endpoint LIVE
 const API_URL = "https://shadow-edge-v-production.up.railway.app/nba/live/games";
 
+
+// Chargement des matchs LIVE
 async function loadLiveGames() {
     const container = document.getElementById("live-games");
     container.innerHTML = "<p>Chargement...</p>";
@@ -48,36 +52,38 @@ async function loadLiveGames() {
             return;
         }
 
-        games.forEach(game => { 
+        games.forEach(game => {
             const card = document.createElement("div");
-card.className = "live-card";
+            card.className = "live-card";
+
+            // Logos
             const homeLogo = TEAM_LOGOS[game.homeTeam];
-const awayLogo = TEAM_LOGOS[game.awayTeam];
+            const awayLogo = TEAM_LOGOS[game.awayTeam];
 
-card.innerHTML = `
-    <div class="live-card-header">
-        <div class="team-block">
-            <img src="https://cdn.nba.com/logos/nba/${homeLogo}/global/L/logo.svg" class="team-logo">
-            <span>${game.homeTeam}</span>
-        </div>
-
-        <div class="vs">VS</div>
-
-        <div class="team-block">
-            <img src="https://cdn.nba.com/logos/nba/${awayLogo}/global/L/logo.svg" class="team-logo">
-            <span>${game.awayTeam}</span>
-        </div>
-    </div>
-
-    <p>Status : ${game.status}</p>
-    <p>Score : ${game.homeScore} - ${game.awayScore}</p>
-`;
-
+            // Contenu de la carte
             card.innerHTML = `
-                <h2>${game.homeTeam} vs ${game.awayTeam}</h2>
+                <div class="live-card-header">
+                    <div class="team-block">
+                        <img src="https://cdn.nba.com/logos/nba/${homeLogo}/global/L/logo.svg" class="team-logo">
+                        <span>${game.homeTeam}</span>
+                    </div>
+
+                    <div class="vs">VS</div>
+
+                    <div class="team-block">
+                        <img src="https://cdn.nba.com/logos/nba/${awayLogo}/global/L/logo.svg" class="team-logo">
+                        <span>${game.awayTeam}</span>
+                    </div>
+                </div>
+
                 <p>Status : ${game.status}</p>
                 <p>Score : ${game.homeScore} - ${game.awayScore}</p>
             `;
+
+            // Effet pulse si match en cours
+            if (game.status !== "Final") {
+                card.classList.add("pulse");
+            }
 
             container.appendChild(card);
         });
@@ -88,7 +94,10 @@ card.innerHTML = `
     }
 }
 
+// Chargement initial
 loadLiveGames();
+
+// Bouton Refresh
 document.getElementById("refresh-btn").addEventListener("click", () => {
     loadLiveGames();
 });
