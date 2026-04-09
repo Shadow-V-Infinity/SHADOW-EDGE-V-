@@ -1,10 +1,6 @@
 import os
 import requests
-from nba_api.live.nba.endpoints import scoreboard, boxscore, playbyplay
-
-# -----------------------------
-#   CONFIGURATION
-# -----------------------------
+from nba_api.live.nba.endpoints import scoreboard
 
 BALLDONTLIE_KEY = os.getenv("BALLDONTLIE_API_KEY")
 ODDS_KEY = os.getenv("ODDS_API_KEY")
@@ -15,15 +11,12 @@ ODDS_URL = "https://api.the-odds-api.com/v4/sports/basketball_nba"
 HEADERS_BDL = {"Authorization": f"Bearer {BALLDONTLIE_KEY}"} if BALLDONTLIE_KEY else {}
 HEADERS_ODDS = {}
 
-# -----------------------------
-#   SERVICE PRINCIPAL
-# -----------------------------
 
 class ShadowEdgePreMatchService:
 
-    # -------------------------
-    #   1) MATCHS DU JOUR
-    # -------------------------
+    # ---------------------------------------------------------
+    # 1) MATCHS DU JOUR — COMPATIBLE FRONTEND
+    # ---------------------------------------------------------
     def get_today_games(self):
         try:
             sb = scoreboard.ScoreBoard()
@@ -33,17 +26,23 @@ class ShadowEdgePreMatchService:
             for g in games:
                 formatted.append({
                     "game_id": g["gameId"],
-                    "home": g["homeTeam"]["teamName"],
-                    "away": g["awayTeam"]["teamName"],
+                    "homeTeam": g["homeTeam"]["teamName"],
+                    "awayTeam": g["awayTeam"]["teamName"],
+
+                    # placeholders pour éviter undefined
+                    "pace": None,
+                    "off_rating": None,
+                    "def_rating": None,
+                    "form": None,
                 })
             return formatted
 
-        except Exception as e:
+        except Exception:
             return []
 
-    # -------------------------
-    #   2) STATS BALDONTLIE
-    # -------------------------
+    # ---------------------------------------------------------
+    # 2) STATS BALDONTLIE
+    # ---------------------------------------------------------
     def get_team_stats(self, team_name):
         try:
             r = requests.get(
@@ -71,9 +70,9 @@ class ShadowEdgePreMatchService:
         except Exception:
             return {}
 
-    # -------------------------
-    #   3) DERNIERS MATCHS
-    # -------------------------
+    # ---------------------------------------------------------
+    # 3) DERNIERS MATCHS
+    # ---------------------------------------------------------
     def get_last_games(self, team_id):
         try:
             r = requests.get(
@@ -85,16 +84,19 @@ class ShadowEdgePreMatchService:
         except:
             return {}
 
-    # -------------------------
-    #   4) TENDANCES (simple)
-    # -------------------------
+    # ---------------------------------------------------------
+    # 4) TENDANCES — FIXÉ
+    # ---------------------------------------------------------
     def compute_trends(self, last_games):
         try:
             games = last_games.get("data", [])
             if not games:
                 return {}
 
-            pts = [g["home_team_score"] if g["home_team"]["id"] else g["visitor_team_score"] for g in games]
+            pts = []
+            for g in games:
+                pts.append(g["home_team_score"] + g["visitor_team_score"])
+
             return {
                 "avg_points": sum(pts) / len(pts),
                 "games_count": len(pts)
@@ -102,9 +104,9 @@ class ShadowEdgePreMatchService:
         except:
             return {}
 
-    # -------------------------
-    #   5) COTES — THE ODDS API
-    # -------------------------
+    # ---------------------------------------------------------
+    # 5) ODDS
+    # ---------------------------------------------------------
     def get_odds(self):
         try:
             r = requests.get(
@@ -112,29 +114,25 @@ class ShadowEdgePreMatchService:
                 params={
                     "apiKey": ODDS_KEY,
                     "regions": "eu",
-                    "markets": "h2h,spreads,totals,player_props"
+                    "markets": "h2h,spreads,totals"
                 }
             )
             return r.json()
         except:
             return {}
 
-    # -------------------------
-    #   6) INJURIES (simple)
-    # -------------------------
+    # ---------------------------------------------------------
+    # 6) INJURIES
+    # ---------------------------------------------------------
     def get_injuries(self):
-        # Pas d’API gratuite fiable → placeholder Shadow Edge
         return {
-            "shadow_edge": {
-                "home": [],
-                "away": []
-            },
+            "shadow_edge": {"home": [], "away": []},
             "nba_api": []
         }
 
-    # -------------------------
-    #   7) MATCHUPS (simple)
-    # -------------------------
+    # ---------------------------------------------------------
+    # 7) MATCHUPS
+    # ---------------------------------------------------------
     def compute_matchups(self, home_stats, away_stats):
         return {
             "full": {
@@ -144,17 +142,15 @@ class ShadowEdgePreMatchService:
             "alerts": []
         }
 
-    # -------------------------
-    #   8) PLAYTYPES (dérivés)
-    # -------------------------
+    # ---------------------------------------------------------
+    # 8) PLAYTYPES
+    # ---------------------------------------------------------
     def compute_playtypes(self, stats):
-        # dérivation simple basée sur fréquence de tirs
         try:
             raw = stats.get("raw", {}).get("data", [])
             if not raw:
                 return {}
 
-            total = len(raw)
             return {
                 "pick_and_roll": {"frequency": 0.20},
                 "isolation": {"frequency": 0.15},
@@ -166,9 +162,9 @@ class ShadowEdgePreMatchService:
         except:
             return {}
 
-    # -------------------------
-    #   9) STYLE INDEX
-    # -------------------------
+    # ---------------------------------------------------------
+    # 9) STYLE INDEX
+    # ---------------------------------------------------------
     def compute_style_index(self, playtypes):
         try:
             return {
@@ -179,38 +175,29 @@ class ShadowEdgePreMatchService:
         except:
             return {}
 
-    # -------------------------
-    #   10) PACKAGE COMPLET
-    # -------------------------
+    # ---------------------------------------------------------
+    # 10) PACKAGE COMPLET — FIXÉ
+    # ---------------------------------------------------------
     def get_pre_match_package(self, game_id, home, away):
 
-        # STATS
         home_stats = self.get_team_stats(home)
         away_stats = self.get_team_stats(away)
 
-        # LAST GAMES
         home_last = self.get_last_games(home_stats.get("team_id"))
         away_last = self.get_last_games(away_stats.get("team_id"))
 
-        # TRENDS
         home_trends = self.compute_trends(home_last)
         away_trends = self.compute_trends(away_last)
 
-        # MATCHUPS
         matchups = self.compute_matchups(home_stats, away_stats)
 
-        # PLAYTYPES
         play_home = self.compute_playtypes(home_stats)
         play_away = self.compute_playtypes(away_stats)
 
-        # STYLE INDEX
         style_home = self.compute_style_index(play_home)
         style_away = self.compute_style_index(play_away)
 
-        # ODDS
         odds = self.get_odds()
-
-        # INJURIES
         injuries = self.get_injuries()
 
         return {
@@ -222,7 +209,7 @@ class ShadowEdgePreMatchService:
             },
             "last_games": {
                 "home": home_last,
-                "away": home_last
+                "away": away_last
             },
             "trends": {
                 "home": home_trends,
