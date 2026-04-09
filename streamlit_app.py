@@ -17,4 +17,4 @@ page = st.sidebar.selectbox(
     ],
 )
 
-render_page(page)
+st.write(f"Page sélectionnée : {page}")
