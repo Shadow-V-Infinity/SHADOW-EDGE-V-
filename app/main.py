@@ -22,10 +22,10 @@ app.add_middleware(
 app.include_router(nba_live.router, prefix="/nba/live", tags=["NBA Live"])
 app.include_router(nba_pre_match.router, prefix="/nba/pre_match", tags=["NBA Pre-Match"])
 
-# FRONTEND STATIC (doit être APRÈS app = FastAPI)
+# FRONTEND STATIC
 app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
 
-# Ton endpoint JSON doit être ailleurs que "/"
+# JSON STATUS
 @app.get("/api")
 def root():
     return {"status": "ok", "engine": "Shadow Edge V∞"}
