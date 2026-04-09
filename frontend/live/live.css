@@ -6,7 +6,7 @@
 .live-title {
     font-size: 2.5rem;
     color: #b300ff;
-    text-shadow: 0 0 15px #b300ff;
+    text-shadow: 0 0 20px #b300ff;
     letter-spacing: 3px;
 }
 
@@ -20,22 +20,60 @@
     margin-top: 40px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 25px;
     align-items: center;
 }
 
+/* --- CARTE LIVE VERSION SHADOW EDGE V∞ --- */
+
 .live-card {
     width: 80%;
-    padding: 20px;
-    border: 1px solid #b300ff;
-    background: rgba(20, 0, 30, 0.4);
-    backdrop-filter: blur(6px);
+    padding: 25px;
+    border: 1px solid rgba(179, 0, 255, 0.4);
+    background: rgba(10, 0, 20, 0.55);
+    backdrop-filter: blur(8px);
     color: #e0e0e0;
     text-align: left;
-    transition: 0.2s;
+    transition: 0.25s ease;
+    position: relative;
+    overflow: hidden;
 }
 
+/* Glow interne */
+.live-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 1px solid rgba(179, 0, 255, 0.2);
+    box-shadow: 0 0 25px rgba(179, 0, 255, 0.3);
+    opacity: 0;
+    transition: 0.3s ease;
+}
+
+/* Ligne HUD animée */
+.live-card::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #b300ff, transparent);
+    animation: hud-line 3s linear infinite;
+}
+
+@keyframes hud-line {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* Hover Shadow Edge */
 .live-card:hover {
-    box-shadow: 0 0 20px #b300ff;
-    transform: scale(1.02);
+    transform: scale(1.03);
+    border-color: #b300ff;
+    box-shadow: 0 0 25px #b300ff;
+}
+
+.live-card:hover::before {
+    opacity: 1;
 }
