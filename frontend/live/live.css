@@ -1,0 +1,41 @@
+.live-container {
+    padding: 40px;
+    text-align: center;
+}
+
+.live-title {
+    font-size: 2.5rem;
+    color: #b300ff;
+    text-shadow: 0 0 15px #b300ff;
+    letter-spacing: 3px;
+}
+
+.live-subtitle {
+    margin-top: -10px;
+    color: #777;
+    font-size: 1rem;
+}
+
+.live-games {
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+}
+
+.live-card {
+    width: 80%;
+    padding: 20px;
+    border: 1px solid #b300ff;
+    background: rgba(20, 0, 30, 0.4);
+    backdrop-filter: blur(6px);
+    color: #e0e0e0;
+    text-align: left;
+    transition: 0.2s;
+}
+
+.live-card:hover {
+    box-shadow: 0 0 20px #b300ff;
+    transform: scale(1.02);
+}
