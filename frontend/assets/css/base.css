@@ -1,0 +1,50 @@
+body {
+    margin: 0;
+    padding: 0;
+    background: #050505;
+    font-family: 'Orbitron', sans-serif;
+    color: #e0e0e0;
+}
+
+.hud-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.hud-title h1 {
+    font-size: 3.2rem;
+    letter-spacing: 4px;
+    color: #b300ff;
+    text-shadow: 0 0 20px #b300ff;
+}
+
+.hud-title p {
+    margin-top: -10px;
+    font-size: 1.1rem;
+    color: #888;
+}
+
+.hud-menu {
+    margin-top: 40px;
+    display: flex;
+    gap: 30px;
+}
+
+.hud-button {
+    padding: 15px 30px;
+    border: 1px solid #b300ff;
+    color: #b300ff;
+    text-decoration: none;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    transition: 0.2s;
+}
+
+.hud-button:hover {
+    background: #b300ff;
+    color: #050505;
+    box-shadow: 0 0 20px #b300ff;
+}
