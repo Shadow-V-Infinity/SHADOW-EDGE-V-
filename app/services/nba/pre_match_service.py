@@ -128,9 +128,10 @@ class ShadowEdgePreMatchService:
 
         try:
             stats = leaguedashteamstats.LeagueDashTeamStats(
-                measure_type_simple_nullable="Advanced",
+                measure_type_nullable="Advanced",
                 per_mode_simple="PerGame",
                 season="2024-25",
+                timeout=30,
             )
             df = stats.get_data_frames()[0]
 
@@ -154,16 +155,26 @@ class ShadowEdgePreMatchService:
     # ───────────────────────────────────────────────────────────
     def get_team_stats(self, team_name: str) -> dict:
         try:
-            r    = requests.get(f"{BALL_URL}/teams", headers=HEADERS_BDL,
-                                params={"search": team_name}, timeout=5)
+            # Rebuild headers at call time pour s'assurer que la clé est lue
+            key = os.getenv("BALLDONTLIE_API_KEY", "")
+            if not key:
+                print(f"[PreMatchService] BALLDONTLIE_API_KEY manquante")
+                return {}
+            headers = {"Authorization": f"Bearer {key}"}
+
+            r = requests.get(f"{BALL_URL}/teams", headers=headers,
+                             params={"search": team_name}, timeout=8)
+            if r.status_code != 200:
+                print(f"[PreMatchService] get_team_stats({team_name}) HTTP {r.status_code}")
+                return {}
             data = r.json()
             if not data.get("data"):
                 return {}
 
             team_id = data["data"][0]["id"]
-            stats   = requests.get(f"{BALL_URL}/stats", headers=HEADERS_BDL,
-                                   params={"team_ids[]": team_id, "per_page": 100},
-                                   timeout=5).json()
+            stats = requests.get(f"{BALL_URL}/stats", headers=headers,
+                                 params={"team_ids[]": team_id, "per_page": 100},
+                                 timeout=8).json()
             return {"team_id": team_id, "raw": stats}
 
         except Exception as e:
@@ -177,9 +188,13 @@ class ShadowEdgePreMatchService:
         if not team_id:
             return {}
         try:
-            r = requests.get(f"{BALL_URL}/games", headers=HEADERS_BDL,
+            key = os.getenv("BALLDONTLIE_API_KEY", "")
+            if not key:
+                return {}
+            headers = {"Authorization": f"Bearer {key}"}
+            r = requests.get(f"{BALL_URL}/games", headers=headers,
                              params={"team_ids[]": team_id, "per_page": 5},
-                             timeout=5)
+                             timeout=8)
             return r.json()
         except Exception as e:
             print(f"[PreMatchService] get_last_games error: {e}")
