@@ -2,8 +2,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
-
 from app.routers.nba import live as nba_live
 from app.routers.nba import pre_match as nba_pre_match
 
@@ -20,9 +18,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ROUTERS
 app.include_router(nba_live.router, prefix="/nba/live", tags=["NBA Live"])
 app.include_router(nba_pre_match.router, prefix="/nba/pre_match", tags=["NBA Pre-Match"])
 
-@app.get("/")
+# FRONTEND STATIC
+app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
+
+@app.get("/api")
 def root():
     return {"status": "ok", "engine": "Shadow Edge V∞"}
