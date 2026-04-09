@@ -35,3 +35,6 @@ async function loadLiveGames() {
 }
 
 loadLiveGames();
+document.getElementById("refresh-btn").addEventListener("click", () => {
+    loadLiveGames();
+});
