@@ -95,3 +95,29 @@
     box-shadow: 0 0 20px #b300ff;
     transform: scale(1.05);
 }
+
+.live-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.team-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.team-logo {
+    width: 55px;
+    height: 55px;
+    filter: drop-shadow(0 0 8px #b300ff);
+}
+
+.vs {
+    font-size: 1.4rem;
+    color: #b300ff;
+    text-shadow: 0 0 10px #b300ff;
+}
