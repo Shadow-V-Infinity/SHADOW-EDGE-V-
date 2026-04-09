@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Query
-from app.services.nba.pre_match_service import PreMatchService
+from app.services.nba.pre_match_service import ShadowEdgePreMatchService
 
 router = APIRouter()
-service = PreMatchService()
+service = ShadowEdgePreMatchService()
 
 @router.get("/today")
 def today_games():
