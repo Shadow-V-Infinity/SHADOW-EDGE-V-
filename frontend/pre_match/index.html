@@ -34,28 +34,73 @@
             box-shadow: 0 0 12px #b300ff;
         }
 
+        #game-count {
+            font-size: 0.85rem;
+            color: rgba(179, 0, 255, 0.6);
+            margin-bottom: 16px;
+        }
+
         #pre-match-container {
             width: 90%;
             max-width: 600px;
             margin: auto;
             text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .game-card {
             background: rgba(255, 255, 255, 0.05);
             padding: 20px;
             border-radius: 10px;
             border: 1px solid rgba(179, 0, 255, 0.3);
+            transition: border-color 0.25s, box-shadow 0.25s;
+        }
+
+        .game-card:hover {
+            border-color: #b300ff;
+            box-shadow: 0 0 16px rgba(179, 0, 255, 0.25);
         }
 
         .team {
             font-size: 1.3rem;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
             color: #fff;
         }
 
+        .status {
+            font-size: 0.8rem;
+            color: rgba(179, 0, 255, 0.6);
+            margin-bottom: 12px;
+        }
+
         .stat-block {
-            margin-top: 15px;
+            margin-top: 12px;
             padding: 10px;
             background: rgba(179, 0, 255, 0.1);
             border-radius: 6px;
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+
+        .stat-block strong {
+            color: #b300ff;
+        }
+
+        .stat-val {
+            color: #fff;
+        }
+
+        .stat-null {
+            color: rgba(255,255,255,0.3);
+        }
+
+        .empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(179, 0, 255, 0.5);
+            font-size: 0.95rem;
         }
     </style>
 </head>
@@ -65,37 +110,53 @@
 
     <button id="refresh-btn">Refresh</button>
 
+    <div id="game-count"></div>
+
     <div id="pre-match-container">
         Chargement des données...
     </div>
 
     <script>
+        function statVal(val) {
+            if (val === null || val === undefined) {
+                return `<span class="stat-null">—</span>`;
+            }
+            return `<span class="stat-val">${val}</span>`;
+        }
+
         async function loadPreMatch() {
             const container = document.getElementById("pre-match-container");
+            const countEl   = document.getElementById("game-count");
             container.innerHTML = "Chargement...";
+            countEl.textContent = "";
 
             try {
                 const response = await fetch("/nba/pre_match/games");
                 const data = await response.json();
 
                 if (!data || data.length === 0) {
-                    container.innerHTML = "<p>Aucun match disponible.</p>";
+                    container.innerHTML = '<div class="empty">Aucun match disponible aujourd\'hui.</div>';
                     return;
                 }
 
-                const game = data[0]; // on prend le premier match pour l'instant
+                countEl.textContent = `${data.length} match${data.length > 1 ? 's' : ''} aujourd'hui`;
 
-                container.innerHTML = `
-                    <div class="team">${game.homeTeam} vs ${game.awayTeam}</div>
+                // ✅ On affiche TOUS les matchs
+                container.innerHTML = data.map(game => `
+                    <div class="game-card">
+                        <div class="team">${game.homeTeam} vs ${game.awayTeam}</div>
+                        <div class="status">${game.status || 'Programmé'}</div>
 
-                    <div class="stat-block">
-                        <strong>Stats :</strong><br>
-                        Pace : ${game.pace}<br>
-                        Offensive Rating : ${game.off_rating}<br>
-                        Defensive Rating : ${game.def_rating}<br>
-                        Forme récente : ${game.form}
+                        <div class="stat-block">
+                            <strong>Stats :</strong><br>
+                            Pace : ${statVal(game.pace)}<br>
+                            Offensive Rating : ${statVal(game.off_rating)}<br>
+                            Defensive Rating : ${statVal(game.def_rating)}<br>
+                            Forme récente : ${statVal(game.form)}
+                        </div>
                     </div>
-                `;
+                `).join('');
+
             } catch (error) {
                 container.innerHTML = "<p>Erreur lors du chargement.</p>";
                 console.error(error);
