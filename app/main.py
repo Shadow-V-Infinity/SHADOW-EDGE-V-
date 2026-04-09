@@ -22,10 +22,11 @@ app.add_middleware(
 app.include_router(nba_live.router, prefix="/nba/live", tags=["NBA Live"])
 app.include_router(nba_pre_match.router, prefix="/nba/pre_match", tags=["NBA Pre-Match"])
 
-# FRONTEND STATIC
+# FRONTEND STATIC ROUTES
+app.mount("/pre_match", StaticFiles(directory="frontend/pre_match", html=True), name="pre_match")
+app.mount("/live", StaticFiles(directory="frontend/live", html=True), name="live")
 app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
 
-# JSON STATUS
 @app.get("/api")
 def root():
     return {"status": "ok", "engine": "Shadow Edge V∞"}
