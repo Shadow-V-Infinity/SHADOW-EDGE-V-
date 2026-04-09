@@ -2,170 +2,302 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Shadow Edge">
+    <meta name="theme-color" content="#0a1628">
+    <link rel="manifest" href="/manifest.json">
     <title>Avant-match – Shadow Edge V∞</title>
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            background: #0a0014;
-            color: #b300ff;
-            font-family: Arial, sans-serif;
+            background: #070f1e;
+            color: #c8d8f0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+
+        /* ── HEADER ── */
+        header {
+            background: linear-gradient(180deg, #0a1628 0%, #070f1e 100%);
+            border-bottom: 1px solid #1a3a6e;
+            padding: 22px 20px 18px;
             text-align: center;
-            padding-top: 40px;
         }
 
         h1 {
-            font-size: 2.2rem;
-            margin-bottom: 20px;
-            text-shadow: 0 0 12px #b300ff;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 4px;
+            color: #4a9eff;
+            text-shadow: 0 0 20px rgba(74,158,255,0.4);
+        }
+
+        .subtitle {
+            font-size: 0.72rem;
+            color: #2a4a7a;
+            letter-spacing: 3px;
+            margin-top: 4px;
+            text-transform: uppercase;
+        }
+
+        /* ── TOOLBAR ── */
+        .toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: #0a1628;
+            border-bottom: 1px solid #112240;
+        }
+
+        .game-count {
+            font-size: 0.8rem;
+            color: #4a9eff;
+            letter-spacing: 1px;
+            font-weight: 600;
         }
 
         #refresh-btn {
-            padding: 10px 18px;
-            background: rgba(179, 0, 255, 0.2);
-            border: 1px solid #b300ff;
-            border-radius: 6px;
-            color: #fff;
+            padding: 7px 18px;
+            background: #1a3a6e;
+            border: 1px solid #2a5aae;
+            border-radius: 5px;
+            color: #4a9eff;
             cursor: pointer;
-            margin-bottom: 25px;
-            transition: 0.25s ease;
+            font-size: 0.78rem;
+            letter-spacing: 2px;
+            font-weight: 600;
+            transition: 0.2s ease;
         }
 
         #refresh-btn:hover {
-            background: rgba(179, 0, 255, 0.35);
-            box-shadow: 0 0 12px #b300ff;
+            background: #2a5aae;
+            color: #fff;
+            box-shadow: 0 0 12px rgba(74,158,255,0.3);
         }
 
-        #game-count {
-            font-size: 0.85rem;
-            color: rgba(179, 0, 255, 0.6);
-            margin-bottom: 16px;
-        }
-
+        /* ── GRID ── */
         #pre-match-container {
-            width: 90%;
-            max-width: 600px;
-            margin: auto;
-            text-align: left;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 10px;
+            padding: 14px 12px;
         }
 
+        /* ── CARD ── */
         .game-card {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 20px;
+            background: #0d1e36;
+            border: 1px solid #1a3a6e;
             border-radius: 10px;
-            border: 1px solid rgba(179, 0, 255, 0.3);
-            transition: border-color 0.25s, box-shadow 0.25s;
+            overflow: hidden;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
         .game-card:hover {
-            border-color: #b300ff;
-            box-shadow: 0 0 16px rgba(179, 0, 255, 0.25);
+            border-color: #4a9eff;
+            box-shadow: 0 0 18px rgba(74,158,255,0.15);
         }
 
-        .team {
-            font-size: 1.3rem;
-            margin-bottom: 6px;
-            color: #fff;
+        /* top accent line */
+        .card-top {
+            height: 2px;
+            background: linear-gradient(90deg, #1a3a6e, #4a9eff, #1a3a6e);
         }
 
-        .status {
-            font-size: 0.8rem;
-            color: rgba(179, 0, 255, 0.6);
+        .card-body {
+            padding: 14px 16px 12px;
+        }
+
+        /* ── TEAMS ── */
+        .teams-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+
+        .team-name {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #e8f0ff;
+            letter-spacing: 0.5px;
+            flex: 1;
+        }
+
+        .team-name.away { text-align: right; }
+
+        .vs {
+            font-size: 0.7rem;
+            color: #2a4a7a;
+            font-weight: 700;
+            letter-spacing: 2px;
+            padding: 0 10px;
+        }
+
+        .game-status {
+            font-size: 0.72rem;
+            color: #4a9eff;
+            letter-spacing: 1px;
             margin-bottom: 12px;
+            opacity: 0.7;
         }
 
+        /* ── STATS ── */
         .stat-block {
-            margin-top: 12px;
-            padding: 10px;
-            background: rgba(179, 0, 255, 0.1);
+            background: #071428;
+            border: 1px solid #112240;
             border-radius: 6px;
-            font-size: 0.9rem;
-            line-height: 1.8;
+            padding: 10px 14px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 20px;
         }
 
-        .stat-block strong {
-            color: #b300ff;
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
         }
 
-        .stat-val {
-            color: #fff;
+        .stat-label {
+            color: #2a5a8a;
+            font-size: 0.72rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
-        .stat-null {
-            color: rgba(255,255,255,0.3);
+        .stat-value {
+            color: #4a9eff;
+            font-weight: 700;
+            font-size: 0.82rem;
         }
 
+        .stat-value.null-val {
+            color: #1a3a5e;
+            font-weight: 400;
+        }
+
+        /* ── GAME ID ── */
+        .card-footer {
+            padding: 6px 16px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .game-id {
+            font-size: 0.65rem;
+            color: #1a3a5e;
+            letter-spacing: 1px;
+        }
+
+        /* ── EMPTY / ERROR ── */
         .empty {
             text-align: center;
-            padding: 40px 20px;
-            color: rgba(179, 0, 255, 0.5);
-            font-size: 0.95rem;
+            padding: 60px 20px;
+            color: #1a3a5e;
+            font-size: 0.9rem;
         }
+
+        .empty-icon { font-size: 36px; margin-bottom: 12px; }
     </style>
 </head>
 <body>
 
-    <h1>Avant-match</h1>
+    <header>
+        <h1>SHADOW EDGE V∞</h1>
+        <p class="subtitle">Moteur analytique NBA — Avant-Match</p>
+    </header>
 
-    <button id="refresh-btn">Refresh</button>
-
-    <div id="game-count"></div>
+    <div class="toolbar">
+        <div class="game-count" id="game-count">—</div>
+        <button id="refresh-btn">REFRESH</button>
+    </div>
 
     <div id="pre-match-container">
-        Chargement des données...
+        <div class="empty"><div class="empty-icon">🏀</div>Chargement...</div>
     </div>
 
     <script>
         function statVal(val) {
             if (val === null || val === undefined) {
-                return `<span class="stat-null">—</span>`;
+                return `<span class="stat-value null-val">—</span>`;
             }
-            return `<span class="stat-val">${val}</span>`;
+            return `<span class="stat-value">${val}</span>`;
         }
 
         async function loadPreMatch() {
             const container = document.getElementById("pre-match-container");
             const countEl   = document.getElementById("game-count");
-            container.innerHTML = "Chargement...";
-            countEl.textContent = "";
+            container.innerHTML = '<div class="empty"><div class="empty-icon">⏳</div>Chargement...</div>';
+            countEl.textContent = "—";
 
             try {
-                const response = await fetch("/nba/pre_match/games");
-                const data = await response.json();
+                const res  = await fetch("/nba/pre_match/games");
+                const data = await res.json();
 
                 if (!data || data.length === 0) {
-                    container.innerHTML = '<div class="empty">Aucun match disponible aujourd\'hui.</div>';
+                    container.innerHTML = '<div class="empty"><div class="empty-icon">🏀</div>Aucun match disponible.</div>';
+                    countEl.textContent = "0 match";
                     return;
                 }
 
                 countEl.textContent = `${data.length} match${data.length > 1 ? 's' : ''} aujourd'hui`;
 
-                // ✅ On affiche TOUS les matchs
                 container.innerHTML = data.map(game => `
                     <div class="game-card">
-                        <div class="team">${game.homeTeam} vs ${game.awayTeam}</div>
-                        <div class="status">${game.status || 'Programmé'}</div>
-
-                        <div class="stat-block">
-                            <strong>Stats :</strong><br>
-                            Pace : ${statVal(game.pace)}<br>
-                            Offensive Rating : ${statVal(game.off_rating)}<br>
-                            Defensive Rating : ${statVal(game.def_rating)}<br>
-                            Forme récente : ${statVal(game.form)}
+                        <div class="card-top"></div>
+                        <div class="card-body">
+                            <div class="teams-row">
+                                <span class="team-name">${game.homeTeam}</span>
+                                <span class="vs">VS</span>
+                                <span class="team-name away">${game.awayTeam}</span>
+                            </div>
+                            <div class="game-status">${game.status || 'Programmé'}</div>
+                            <div class="stat-block">
+                                <div class="stat-row">
+                                    <span class="stat-label">PACE</span>
+                                    ${statVal(game.pace)}
+                                </div>
+                                <div class="stat-row">
+                                    <span class="stat-label">OFF RTG</span>
+                                    ${statVal(game.off_rating)}
+                                </div>
+                                <div class="stat-row">
+                                    <span class="stat-label">DEF RTG</span>
+                                    ${statVal(game.def_rating)}
+                                </div>
+                                <div class="stat-row">
+                                    <span class="stat-label">FORME</span>
+                                    ${statVal(game.form)}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <span class="game-id">ID: ${game.game_id}</span>
                         </div>
                     </div>
                 `).join('');
 
-            } catch (error) {
-                container.innerHTML = "<p>Erreur lors du chargement.</p>";
-                console.error(error);
+            } catch (err) {
+                container.innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div>Erreur de connexion.<br><span style="font-size:0.75rem">${err.message}</span></div>`;
+                countEl.textContent = "Erreur";
             }
         }
 
         document.getElementById("refresh-btn").addEventListener("click", loadPreMatch);
-
         loadPreMatch();
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js')
+                .catch(err => console.error('[SW]', err));
+        }
     </script>
 
 </body>
