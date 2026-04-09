@@ -77,3 +77,21 @@
 .live-card:hover::before {
     opacity: 1;
 }
+.refresh-btn {
+    margin-top: 20px;
+    padding: 12px 25px;
+    border: 1px solid #b300ff;
+    background: rgba(20, 0, 40, 0.5);
+    color: #b300ff;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: 0.25s ease;
+}
+
+.refresh-btn:hover {
+    background: #b300ff;
+    color: #050505;
+    box-shadow: 0 0 20px #b300ff;
+    transform: scale(1.05);
+}
