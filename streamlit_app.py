@@ -1,11 +1,13 @@
 import streamlit as st
-from core.router import render_page
 
 st.set_page_config(
     page_title="Shadow Edge V∞",
-    layout="wide",
+    page_icon="⚡",
+    layout="wide"
 )
 
+st.title("⚡ Shadow Edge V∞ — Dashboard")
+st.write("Bienvenue dans ton interface Streamlit déployée sur Railway.")
 st.sidebar.title("Shadow Edge V∞")
 page = st.sidebar.selectbox(
     "Navigation",
