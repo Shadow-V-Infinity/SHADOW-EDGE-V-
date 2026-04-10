@@ -6,3 +6,6 @@ core = CoreService()
 def health():
     raw = core.health_check()
     return hud_status(raw)
+
+def competitions():
+    return core.test_competitions()
