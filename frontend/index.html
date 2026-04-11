@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shadow Edge V∞</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0a0014;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+        h1 {
+            font-size: 2.6rem;
+            color: #b300ff;
+            text-shadow: 0 0 20px #b300ff;
+            letter-spacing: 5px;
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            color: #444;
+            font-size: 0.8rem;
+            letter-spacing: 3px;
+            margin-bottom: 50px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            width: min(500px, 100%);
+            margin-bottom: 30px;
+        }
+        .sport-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 24px 16px;
+            border: 1px solid rgba(179,0,255,0.35);
+            background: rgba(179,0,255,0.06);
+            color: #ccc;
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            transition: 0.25s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .sport-btn::after {
+            content: "";
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, #b300ff, transparent);
+            animation: hud 3s linear infinite;
+        }
+        @keyframes hud { 0%{left:-100%} 100%{left:100%} }
+        .sport-btn:hover {
+            border-color: #b300ff;
+            background: rgba(179,0,255,0.18);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(179,0,255,0.4);
+            transform: scale(1.03);
+        }
+        .sport-icon { font-size: 2rem; }
+        .live-btn {
+            grid-column: 1 / -1;
+            background: rgba(179,0,255,0.12);
+        }
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            width: min(500px, 100%);
+            margin-top: 10px;
+        }
+        .status-card {
+            padding: 10px;
+            border: 1px solid rgba(179,0,255,0.2);
+            background: rgba(10,0,20,0.5);
+            text-align: center;
+            font-size: 0.7rem;
+            color: #555;
+        }
+        .status-card .count { color: #b300ff; font-size: 1.2rem; font-weight: bold; }
+        .api-link {
+            margin-top: 30px;
+            color: #333;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            text-decoration: none;
+        }
+        .api-link:hover { color: #b300ff; }
+    </style>
+</head>
+<body>
+    <h1>Shadow Edge V∞</h1>
+    <p class="subtitle">MOTEUR ANALYTIQUE MULTI-SPORT</p>
+
+    <div class="grid">
+        <a href="/live" class="sport-btn live-btn">
+            <span class="sport-icon">⚡</span>
+            NBA LIVE HUD
+        </a>
+        <a href="/pre_match" class="sport-btn">
+            <span class="sport-icon">⚽</span>
+            FOOTBALL
+        </a>
+        <a href="/basketball" class="sport-btn">
+            <span class="sport-icon">🏀</span>
+            BASKETBALL
+        </a>
+        <a href="/tennis" class="sport-btn">
+            <span class="sport-icon">🎾</span>
+            TENNIS
+        </a>
+        <a href="/hockey" class="sport-btn">
+            <span class="sport-icon">🏒</span>
+            HOCKEY
+        </a>
+        <a href="/rugby" class="sport-btn">
+            <span class="sport-icon">🏉</span>
+            RUGBY
+        </a>
+    </div>
+
+    <div class="status-grid" id="status-grid">
+        <div class="status-card">Chargement...</div>
+    </div>
+
+    <a href="/docs" class="api-link">API DOCS →</a>
+
+<script>
+async function loadSummary() {
+    try {
+        const r    = await fetch('/data/all/summary');
+        const data = await r.json();
+        const grid = document.getElementById('status-grid');
+
+        const sports = {
+            football:   "⚽",
+            basketball: "🏀",
+            tennis:     "🎾",
+            hockey:     "🏒",
+            rugby:      "🏉",
+        };
+
+        grid.innerHTML = Object.entries(sports).map(([sport, icon]) => {
+            const s = data[sport] || {};
+            return `
+                <div class="status-card">
+                    <div>${icon} ${sport.toUpperCase()}</div>
+                    <div class="count">${s.count || 0}</div>
+                    <div>matchs</div>
+                    ${s.date ? `<div style="color:#333;margin-top:4px">${s.date}</div>` : ''}
+                </div>
+            `;
+        }).join('');
+    } catch(e) {
+        document.getElementById('status-grid').innerHTML =
+            '<div class="status-card" style="grid-column:1/-1">En attente des données...</div>';
+    }
+}
+
+loadSummary();
+setInterval(loadSummary, 60000);
+</script>
+</body>
+</html>
