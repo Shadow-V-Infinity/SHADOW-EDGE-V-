@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shadow Edge V∞ — LIVE</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #0a0014;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            min-height: 100vh;
+        }
+
+        /* ── HEADER ── */
+        .live-container { padding: 40px 20px; text-align: center; }
+
+        .live-title {
+            font-size: 2.4rem;
+            color: #b300ff;
+            text-shadow: 0 0 20px #b300ff;
+            letter-spacing: 4px;
+        }
+
+        .live-subtitle {
+            margin-top: 6px;
+            color: #555;
+            font-size: 0.85rem;
+            letter-spacing: 3px;
+        }
+
+        /* ── REFRESH ── */
+        .refresh-btn {
+            margin-top: 24px;
+            padding: 12px 28px;
+            border: 1px solid #b300ff;
+            background: rgba(20, 0, 40, 0.5);
+            color: #b300ff;
+            font-size: 0.95rem;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: 0.25s ease;
+        }
+
+        .refresh-btn:hover {
+            background: #b300ff;
+            color: #050505;
+            box-shadow: 0 0 20px #b300ff;
+            transform: scale(1.05);
+        }
+
+        /* ── GAMES GRID ── */
+        .live-games {
+            margin-top: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            align-items: center;
+        }
+
+        /* ── CARD ── */
+        .live-card {
+            width: min(85%, 700px);
+            padding: 28px;
+            border: 1px solid rgba(179, 0, 255, 0.35);
+            background: rgba(10, 0, 20, 0.6);
+            backdrop-filter: blur(8px);
+            text-align: left;
+            transition: 0.25s ease;
+            position: relative;
+            overflow: hidden;
+            animation: pulseGlow 2.5s infinite ease-in-out;
+        }
+
+        .live-card::after {
+            content: "";
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, #b300ff, transparent);
+            animation: hud-line 3s linear infinite;
+        }
+
+        .live-card:hover {
+            transform: scale(1.02);
+            border-color: #b300ff;
+            box-shadow: 0 0 28px rgba(179, 0, 255, 0.5);
+        }
+
+        @keyframes hud-line {
+            0%   { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 10px rgba(179, 0, 255, 0.15); }
+            50%       { box-shadow: 0 0 22px rgba(179, 0, 255, 0.4); }
+        }
+
+        /* ── CARD HEADER ── */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .status-badge {
+            background: rgba(179, 0, 255, 0.2);
+            border: 1px solid #b300ff;
+            color: #b300ff;
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+        }
+
+        .period-info {
+            color: #666;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        /* ── SCORE ── */
+        .big-score {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin: 10px 0 20px;
+        }
+
+        .team-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .team-name {
+            font-size: 1rem;
+            color: #aaa;
+            letter-spacing: 2px;
+        }
+
+        .score-home, .score-away {
+            font-size: 3.2rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 18px #b300ff, 0 0 36px rgba(179,0,255,0.4);
+            letter-spacing: 2px;
+        }
+
+        .score-separator {
+            font-size: 2.2rem;
+            color: rgba(179, 0, 255, 0.6);
+        }
+
+        /* ── LEADERS ── */
+        .leaders {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 14px;
+            font-size: 0.8rem;
+            color: #666;
+            border-top: 1px solid rgba(179,0,255,0.15);
+            padding-top: 14px;
+        }
+
+        .leader-label { color: #444; margin-bottom: 4px; font-size: 0.7rem; letter-spacing: 1px; }
+        .leader-name  { color: #ccc; }
+        .leader-stat  { color: #b300ff; font-weight: bold; }
+
+        /* ── EMPTY STATE ── */
+        .no-games {
+            margin-top: 80px;
+            color: #333;
+            font-size: 1rem;
+            letter-spacing: 3px;
+        }
+
+        /* ── NAV ── */
+        .nav-back {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #444;
+            text-decoration: none;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            transition: color 0.2s;
+        }
+        .nav-back:hover { color: #b300ff; }
+    </style>
+</head>
+<body>
+
+<div class="live-container">
+    <a href="/" class="nav-back">← ACCUEIL</a>
+
+    <h1 class="live-title">⚡ LIVE HUD</h1>
+    <p class="live-subtitle">SHADOW EDGE V∞</p>
+
+    <button class="refresh-btn" onclick="loadGames()">↺ REFRESH</button>
+
+    <div class="live-games" id="games-container">
+        <p class="no-games">Chargement…</p>
+    </div>
+</div>
+
+<script>
+    async function loadGames() {
+        const container = document.getElementById('games-container');
+        container.innerHTML = '<p class="no-games">Chargement…</p>';
+
+        try {
+            const res  = await fetch('/nba/live/games');
+            const data = await res.json();
+
+            if (!data || data.length === 0) {
+                container.innerHTML = '<p class="no-games">Aucun match en cours.</p>';
+                return;
+            }
+
+            container.innerHTML = data.map(g => `
+                <div class="live-card">
+                    <div class="card-header">
+                        <span class="status-badge">${g.status || 'LIVE'}</span>
+                        <span class="period-info">P${g.period || '?'} — ${g.clock || ''}</span>
+                    </div>
+
+                    <div class="big-score">
+                        <div class="team-block">
+                            <span class="team-name">${g.home_team || '—'}</span>
+                            <span class="score-home">${g.home_score ?? '—'}</span>
+                        </div>
+                        <span class="score-separator">:</span>
+                        <div class="team-block">
+                            <span class="team-name">${g.away_team || '—'}</span>
+                            <span class="score-away">${g.away_score ?? '—'}</span>
+                        </div>
+                    </div>
+
+                    <div class="leaders">
+                        <div>
+                            <p class="leader-label">LEADER DOM.</p>
+                            ${renderLeader(g.leaders?.home)}
+                        </div>
+                        <div style="text-align:right">
+                            <p class="leader-label">LEADER EXT.</p>
+                            ${renderLeader(g.leaders?.away)}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+        } catch (e) {
+            container.innerHTML = '<p class="no-games">Erreur de connexion API.</p>';
+        }
+    }
+
+    function renderLeader(leaders) {
+        if (!leaders || Object.keys(leaders).length === 0) return '<span class="leader-name">—</span>';
+        const pts = leaders.points;
+        if (!pts) return '<span class="leader-name">—</span>';
+        return `<span class="leader-name">${pts.personName || '—'}</span>
+                <span class="leader-stat"> ${pts.value ?? ''} PTS</span>`;
+    }
+
+    // Auto-refresh toutes les 30s
+    loadGames();
+    setInterval(loadGames, 30000);
+</script>
+
+</body>
+</html>
