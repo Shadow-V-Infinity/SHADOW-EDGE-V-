@@ -1,8 +1,0 @@
-[build]
-builder = "nixpacks"
-
-[phases.setup]
-nixPkgs = ["python311"]
-
-[start]
-cmd = "python -m streamlit run streamlit_app.py --server.port=$PORT --server.address=0.0.0.0"
