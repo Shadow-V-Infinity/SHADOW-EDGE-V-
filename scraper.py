@@ -19,7 +19,7 @@ import time
 from datetime import datetime, date
 
 # ── CONFIG ──────────────────────────────────────────────
-RAILWAY_URL       = os.getenv("RAILWAY_URL", "https://shadow-edge-v.onrender.com")
+RAILWAY_URL       = os.getenv("RAILWAY_URL", "https://shadow-edge-v-5mdf.onrender.com")
 OPENWEATHER_KEY   = os.getenv("OPENWEATHER_KEY", "")
 BALLDONTLIE_KEY   = os.getenv("BALLDONTLIE_API_KEY", "")
 FOOTBALL_DATA_KEY = os.getenv("FOOTBALL_DATA_KEY", "")
@@ -137,10 +137,7 @@ def get_events(sport_key):
         events = data.get("events", [])
 
         # Filtrer uniquement les matchs pas encore commencés
-        filtered = [
-            e for e in events
-            if e.get("status", {}).get("type", {}).get("name", "") == "notStarted"
-        ]
+        filtered = events
 
         print(f"  ✅ {len(filtered)} matchs à venir (sur {len(events)} total)")
         return filtered
