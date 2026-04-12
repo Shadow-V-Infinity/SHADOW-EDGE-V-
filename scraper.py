@@ -19,7 +19,7 @@ import time
 from datetime import datetime, date
 
 # ── CONFIG ──────────────────────────────────────────────
-RAILWAY_URL       = os.getenv("RAILWAY_URL", "https://shadow-edge-v.onrender.com")
+RAILWAY_URL       = os.getenv("RAILWAY_URL", "https://shadow-edge-v-5mdf.onrender.com")
 OPENWEATHER_KEY   = os.getenv("OPENWEATHER_KEY", "")
 BALLDONTLIE_KEY   = os.getenv("BALLDONTLIE_API_KEY", "")
 FOOTBALL_DATA_KEY = os.getenv("FOOTBALL_DATA_KEY", "")
