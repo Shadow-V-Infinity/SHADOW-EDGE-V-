@@ -1,4 +1,4 @@
-"""
+u"""
 Shadow Edge V∞ — Scraper Termux
 Lance ce script depuis Termux pour analyser tous les sports
 et envoyer les résultats vers Railway.
@@ -941,7 +941,7 @@ def analyze_basketball(slot=None):
         ts       = event.get("startTimestamp", 0)
         match_time = datetime.fromtimestamp(ts).strftime("%H:%M") if ts else "?"
 
-        odds      = get_odds(event_id, home, away)
+        odds      = get_odds(event_id)
         h2h       = get_h2h(event_id)
         home_form = get_form(home_id)
         away_form = get_form(away_id)
