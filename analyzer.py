@@ -35,7 +35,7 @@ ODDS_API_KEY     = os.getenv("ODDS_API_KEY", "")
 BALLDONTLIE_KEY  = os.getenv("BALLDONTLIE_API_KEY", "")
 OPENWEATHER_KEY  = os.getenv("OPENWEATHER_KEY", "")
 
-ALLSPORTS_BASE   = "https://apiv2.allsportsapi.com"
+ALLSPORTS_BASE   = "https://apiv2.allsportsapi.com/football/
 ODDS_API_BASE    = "https://api.odds-api.io/v3"
 ESPN_BASE        = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba"
 ESPN_WEB         = "https://site.web.api.espn.com/apis/v2/sports/basketball/nba"
